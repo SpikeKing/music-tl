@@ -194,7 +194,7 @@ def save_features(params):
         print '[Exception] %s' % e
 
 
-def generate_npy_data(tn=40):
+def generate_npy_data_train(tn=40):
     print "[INFO] 特征提取开始"
     npy_folder = os.path.join(ROOT_DIR, 'experiments', 'npy_data')
     mkdir_if_not_exist(npy_folder)
@@ -225,6 +225,29 @@ def generate_npy_data(tn=40):
     # pool1.map(save_features, param_list)
     # pool1.close()
     # pool1.join()
+
+    print "[INFO] 特征提取结束"
+
+
+def generate_npy_data_fot_test(tn=40):
+    print "[INFO] 特征提取开始"
+    npy_folder = os.path.join(ROOT_DIR, 'experiments', 'npy_data')
+    mkdir_if_not_exist(npy_folder)
+    npy_train = os.path.join(npy_folder, 'train')
+    npy_test = os.path.join(npy_folder, 'test')
+    mkdir_if_not_exist(npy_train)
+    mkdir_if_not_exist(npy_test)
+
+    raw_test = os.path.join(ROOT_DIR, 'experiments', 'raw_data', 'test')
+    paths, names = traverse_dir_files(raw_test)
+    p = Pool(processes=tn)  # 进程数尽量与核数匹配
+    print "[INFO] 测试数据: %s" % len(paths)
+    for path, name in zip(paths, names):
+        name_id = name.split('_')[0]
+        params = (path, name_id, npy_test)
+        p.apply_async(save_features, args=(params,))
+    p.close()
+    p.join()
 
     print "[INFO] 特征提取结束"
 
