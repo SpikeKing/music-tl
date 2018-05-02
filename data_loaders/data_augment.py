@@ -194,7 +194,7 @@ def save_features(params):
         print '[Exception] %s' % e
 
 
-def generate_npy_data(tn=40):
+def generate_npy_data(tn=20):
     print "[INFO] 特征提取开始"
     npy_folder = os.path.join(ROOT_DIR, 'experiments', 'npy_data')
     mkdir_if_not_exist(npy_folder)
@@ -222,10 +222,10 @@ def generate_npy_data(tn=40):
         name_id = name.split('_')[0]
         param_list.append((path, name_id, npy_test))
     print "[INFO] 测试数据: %s" % len(param_list)
-    pool = ThreadPool(tn)
-    pool.map(save_features, param_list)
-    pool.close()
-    pool.join()
+    pool1 = ThreadPool(tn)
+    pool1.map(save_features, param_list)
+    pool1.close()
+    pool1.join()
 
     print "[INFO] 特征提取结束"
 
