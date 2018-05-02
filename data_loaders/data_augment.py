@@ -15,7 +15,7 @@ p = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if p not in sys.path:
     sys.path.append(p)
 
-from multiprocessing.pool import ThreadPool
+from multiprocessing.pool import ThreadPool, Pool
 from pyAudioAnalysis import audioFeatureExtraction
 from root_dir import ROOT_DIR
 from utils.utils import *
@@ -194,7 +194,7 @@ def save_features(params):
         print '[Exception] %s' % e
 
 
-def generate_npy_data(tn=20):
+def generate_npy_data(tn=40):
     print "[INFO] 特征提取开始"
     npy_folder = os.path.join(ROOT_DIR, 'experiments', 'npy_data')
     mkdir_if_not_exist(npy_folder)
@@ -205,15 +205,14 @@ def generate_npy_data(tn=20):
 
     raw_train = os.path.join(ROOT_DIR, 'experiments', 'raw_data', 'train')
     paths, names = traverse_dir_files(raw_train)
-    param_list = []
+    p = Pool(processes=tn)  # 进程数尽量与核数匹配
+    print "[INFO] 训练数据: %s" % len(paths)
     for path, name in zip(paths, names):
         name_id = name.split('_')[0]
-        param_list.append((path, name_id, npy_train))
-    print "[INFO] 训练数据: %s" % len(param_list)
-    pool = ThreadPool(tn)
-    pool.map(save_features, param_list)
-    pool.close()
-    pool.join()
+        params = (path, name_id, npy_train)
+        p.apply_async(save_features, args=(params,))
+    p.close()
+    p.join()
 
     # raw_test = os.path.join(ROOT_DIR, 'experiments', 'raw_data', 'test')
     # paths, names = traverse_dir_files(raw_test)
