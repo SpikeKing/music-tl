@@ -215,17 +215,17 @@ def generate_npy_data(tn=20):
     pool.close()
     pool.join()
 
-    raw_test = os.path.join(ROOT_DIR, 'experiments', 'raw_data', 'test')
-    paths, names = traverse_dir_files(raw_test)
-    param_list = []
-    for path, name in zip(paths, names):
-        name_id = name.split('_')[0]
-        param_list.append((path, name_id, npy_test))
-    print "[INFO] 测试数据: %s" % len(param_list)
-    pool1 = ThreadPool(tn)
-    pool1.map(save_features, param_list)
-    pool1.close()
-    pool1.join()
+    # raw_test = os.path.join(ROOT_DIR, 'experiments', 'raw_data', 'test')
+    # paths, names = traverse_dir_files(raw_test)
+    # param_list = []
+    # for path, name in zip(paths, names):
+    #     name_id = name.split('_')[0]
+    #     param_list.append((path, name_id, npy_test))
+    # print "[INFO] 测试数据: %s" % len(param_list)
+    # pool1 = ThreadPool(tn)
+    # pool1.map(save_features, param_list)
+    # pool1.close()
+    # pool1.join()
 
     print "[INFO] 特征提取结束"
 
