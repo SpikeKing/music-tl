@@ -263,4 +263,4 @@ def get_feature(y, sr, dim=256):
 
 
 if __name__ == '__main__':
-    generate_npy_data()
+    generate_npy_data_fot_test()
