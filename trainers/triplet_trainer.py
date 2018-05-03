@@ -140,10 +140,10 @@ class TripletTrainer(TrainerBase):
             neg_dist = np.sum(np.square(anchor - negative), axis=-1, keepdims=True)
             basic_loss = pos_dist - neg_dist
             r_count = basic_loss[np.where(basic_loss < 0)].shape[0]
-            # print "[INFO] trainer - distance - min: %s, max: %s, avg: %s" % (
-            #     np.min(basic_loss), np.max(basic_loss), np.average(basic_loss))
-            # print "[INFO] acc: %s" % (float(r_count) / float(n))
-            # print ""
+            print "[INFO] trainer - distance - min: %s, max: %s, avg: %s" % (
+                np.min(basic_loss), np.max(basic_loss), np.average(basic_loss))
+            print "[INFO] acc: %s" % (float(r_count) / float(n))
+            print ""
             min_list.append(np.min(basic_loss))
             max_list.append(np.max(basic_loss))
             avg_list.append(np.average(basic_loss))
