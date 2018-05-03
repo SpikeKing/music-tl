@@ -18,6 +18,7 @@ def mkdir_if_not_exist(dir_name, is_delete=False):
     :return: 是否成功
     """
     try:
+        dir_name = str(dir_name)
         if is_delete:
             if os.path.exists(dir_name):
                 shutil.rmtree(dir_name)
