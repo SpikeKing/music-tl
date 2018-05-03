@@ -5,11 +5,15 @@ Copyright (c) 2018. All rights reserved.
 Created by C. L. Wang on 2018/5/3
 """
 import collections
-import time
-from datetime import datetime
-from multiprocessing import Pool
-
 import numpy as np
+import sys
+import os
+
+p = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if p not in sys.path:
+    sys.path.append(p)
+
+from multiprocessing import Pool
 
 from root_dir import ROOT_DIR
 from utils.utils import *
