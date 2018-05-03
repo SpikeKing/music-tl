@@ -1,7 +1,5 @@
 {
-  "exp_name": "triplet_mnist",
-  "lr": 0.001,
-  "decay": 0.0,
+  "exp_name": "music_tl",
   "num_epochs": 10,
   "batch_size": 64
 }

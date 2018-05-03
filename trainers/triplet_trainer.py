@@ -39,6 +39,7 @@ class TripletTrainer(TrainerBase):
             )
         )
 
+        self.callbacks.append(TlMetric())
         # self.callbacks.append(FPRMetric())
         # self.callbacks.append(FPRMetricDetail())
 
@@ -51,26 +52,30 @@ class TripletTrainer(TrainerBase):
         self.model.fit(
             x_train, y_train,
             batch_size=32,
-            epochs=2,
+            epochs=10,
             verbose=1,
             callbacks=self.callbacks)
 
     def train(self):
         x_train = self.data[0][0]
         y_train = np.argmax(self.data[0][1], axis=1)
-        # x_test = self.data[1][0]
-        # y_test = np.argmax(self.data[1][1], axis=1)
+        x_test = self.data[1][0]
+        y_test = np.argmax(self.data[1][1], axis=1)
 
-        clz_size = len(np.unique(y_train))
-        print "[INFO] trainer - 类别数: %s" % clz_size
+        clz_train = len(np.unique(y_train))
+        print "[INFO] 训练 - 类别数: %s" % clz_train
         print "[INFO] X_train.shape: %s, y_train.shape: %s" \
               % (str(x_train.shape), str(y_train.shape))
 
-        digit_indices = [np.where(y_train == i)[0] for i in range(clz_size)]
-        tr_pairs = self.create_pairs(x_train, digit_indices, clz_size)
+        train_indices = [np.where(y_train == i)[0] for i in range(clz_train)]
+        tr_pairs = self.create_pairs(x_train, train_indices, clz_train)
 
-        # digit_indices = [np.where(y_test == i)[0] for i in range(10)]
-        # te_pairs = self.create_pairs(x_test, digit_indices, clz_size)
+        clz_test = len(np.unique(y_test))
+        print "[INFO] 测试 - 类别数: %s" % clz_test
+        print "[INFO] X_test.shape: %s, y_test.shape: %s" \
+              % (str(x_test.shape), str(y_test.shape))
+        test_indices = [np.where(y_test == i)[0] for i in range(clz_test)]
+        te_pairs = self.create_pairs(x_test, test_indices, clz_test)
 
         anc_ins = tr_pairs[:, 0]
         pos_ins = tr_pairs[:, 1]
@@ -86,28 +91,32 @@ class TripletTrainer(TrainerBase):
             'neg_input': neg_ins
         }
 
-        # anc_ins_te = te_pairs[:, 0]
-        # pos_ins_te = te_pairs[:, 1]
-        # neg_ins_te = te_pairs[:, 2]
-        #
-        # X_te = {
-        #     'anc_input': anc_ins_te,
-        #     'pos_input': pos_ins_te,
-        #     'neg_input': neg_ins_te
-        # }
+        anc_ins_te = te_pairs[:, 0]
+        pos_ins_te = te_pairs[:, 1]
+        neg_ins_te = te_pairs[:, 2]
+
+        X_te = {
+            'anc_input': anc_ins_te,
+            'pos_input': pos_ins_te,
+            'neg_input': neg_ins_te
+        }
+
+        print "anc_ins_te: %s" % str(anc_ins_te.shape)
+        print "pos_ins_te: %s" % str(pos_ins_te.shape)
+        print "neg_ins_te: %s" % str(neg_ins_te.shape)
 
         self.model.fit(
             X, np.ones(len(anc_ins)),
-            batch_size=32,
-            epochs=2,
-            # validation_data=[X_te, np.ones(len(anc_ins_te))],
+            batch_size=self.config.batch_size,
+            epochs=self.config.num_epochs,
+            validation_data=[X_te, np.ones(len(anc_ins_te))],
             verbose=1,
             callbacks=self.callbacks)
 
-        # self.model.save(os.path.join(self.config.cp_dir, "triplet_loss_model.h5"))  # 存储模型
+        self.model.save(os.path.join(self.config.cp_dir, "triplet_loss_model.h5"))  # 存储模型
 
-        # y_pred = self.model.predict(X_te)  # 验证模型
-        # self.show_acc_facets(y_pred, y_pred.shape[0] / clz_size, clz_size)
+        y_pred = self.model.predict(X_te)  # 验证模型
+        self.show_acc_facets(y_pred, y_pred.shape[0] / clz_test, clz_test)
 
     @staticmethod
     def show_acc_facets(y_pred, n, clz_size):
@@ -119,8 +128,10 @@ class TripletTrainer(TrainerBase):
         :return: 打印数据
         """
         print "[INFO] trainer - n_clz: %s" % n
+        print "[INFO] trainer - clz_size: %s" % clz_size
+        min_list, max_list, avg_list, acc_list = [], [], [], []
         for i in range(clz_size):
-            print "[INFO] trainer - clz %s" % i
+            # print "[INFO] trainer - clz %s" % i
             final = y_pred[n * i:n * (i + 1), :]
             anchor, positive, negative = final[:, 0:128], final[:, 128:256], final[:, 256:]
 
@@ -128,10 +139,17 @@ class TripletTrainer(TrainerBase):
             neg_dist = np.sum(np.square(anchor - negative), axis=-1, keepdims=True)
             basic_loss = pos_dist - neg_dist
             r_count = basic_loss[np.where(basic_loss < 0)].shape[0]
-            print "[INFO] trainer - distance - min: %s, max: %s, avg: %s" % (
-                np.min(basic_loss), np.max(basic_loss), np.average(basic_loss))
-            print "[INFO] acc: %s" % (float(r_count) / float(n))
-            print ""
+            # print "[INFO] trainer - distance - min: %s, max: %s, avg: %s" % (
+            #     np.min(basic_loss), np.max(basic_loss), np.average(basic_loss))
+            # print "[INFO] acc: %s" % (float(r_count) / float(n))
+            # print ""
+            min_list.append(np.min(basic_loss))
+            max_list.append(np.max(basic_loss))
+            avg_list.append(np.average(basic_loss))
+            acc_list.append(np.average(float(r_count) / float(n)))
+
+        print "[INFO] min: %s, max: %s, avg: %s, acc: %s" % (
+            np.average(min_list), np.average(max_list), np.average(avg_list), np.average(acc_list))
 
     @staticmethod
     def create_pairs(x, digit_indices, num_classes):
@@ -153,6 +171,14 @@ class TripletTrainer(TrainerBase):
                 z3 = digit_indices[dn][i]
                 pairs += [[x[z1], x[z2], x[z3]]]
         return np.array(pairs)
+
+
+class TlMetric(Callback):
+
+    def on_epoch_end(self, batch, logs=None):
+        y_pred = self.model.predict([self.validation_data[0], self.validation_data[1], self.validation_data[2]])  # 验证模型
+        clz_test = len(self.validation_data[0]) / 18
+        TripletTrainer.show_acc_facets(y_pred, y_pred.shape[0] / clz_test, clz_test)
 
 
 class FPRMetric(Callback):

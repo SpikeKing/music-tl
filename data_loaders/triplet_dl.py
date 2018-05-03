@@ -16,20 +16,24 @@ class TripletDL(DataLoaderBase):
     def __init__(self, config=None):
         super(TripletDL, self).__init__(config)
 
-        data_path = os.path.join(ROOT_DIR, 'experiments', 'music_data_features.npz')
+        data_path = os.path.join(ROOT_DIR, 'experiments', 'data_train.npz')
         data_all = np.load(data_path)
         self.X_train = data_all['f_list']
         self.X_train = np.transpose(self.X_train, [0, 2, 1])
         self.y_train = data_all['l_list']
         self.y_train = to_categorical(self.y_train)
 
-        self.X_test = np.array([])
-        self.y_test = np.array([])
+        data_path = os.path.join(ROOT_DIR, 'experiments', 'data_test.npz')
+        data_all = np.load(data_path)
+        self.X_test = data_all['f_list']
+        self.X_test = np.transpose(self.X_test, [0, 2, 1])
+        self.y_test = data_all['l_list']
+        self.y_test = to_categorical(self.y_test)
 
         print "[INFO] X_train.shape: %s, y_train.shape: %s" \
               % (str(self.X_train.shape), str(self.y_train.shape))
-        # print "[INFO] X_test.shape: %s, y_test.shape: %s" \
-        #       % (str(self.X_test.shape), str(self.y_test.shape))
+        print "[INFO] X_test.shape: %s, y_test.shape: %s" \
+              % (str(self.X_test.shape), str(self.y_test.shape))
 
     def get_train_data(self):
         return self.X_train, self.y_train
