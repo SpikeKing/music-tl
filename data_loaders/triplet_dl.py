@@ -15,24 +15,11 @@ from root_dir import ROOT_DIR
 class TripletDL(DataLoaderBase):
     def __init__(self, config=None):
         super(TripletDL, self).__init__(config)
-        # (self.X_train, self.y_train), (self.X_test, self.y_test) = mnist.load_data()
-
-        # 展平数据，for RNN，感知机
-        # self.X_train = self.X_train.reshape((-1, 28 * 28))
-        # self.X_test = self.X_test.reshape((-1, 28 * 28))
-
-        # 图片数据，for CNN
-        # self.X_train = self.X_train.reshape(self.X_train.shape[0], 28, 28, 1)
-        # self.X_test = self.X_test.reshape(self.X_test.shape[0], 28, 28, 1)
-
-        # self.y_train = to_categorical(self.y_train)
-        # self.y_test = to_categorical(self.y_test)
 
         data_path = os.path.join(ROOT_DIR, 'experiments', 'music_data_features.npz')
         data_all = np.load(data_path)
         self.X_train = data_all['f_list']
         self.X_train = np.transpose(self.X_train, [0, 2, 1])
-        # self.X_train = np.transpose(self.X_train, [1, 0, 2, 3])
         self.y_train = data_all['l_list']
         self.y_train = to_categorical(self.y_train)
 

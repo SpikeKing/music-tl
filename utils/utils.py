@@ -61,11 +61,11 @@ def traverse_dir_files(root_dir, ext=None):
             else:
                 names_list.append(name)
                 paths_list.append(os.path.join(parent, name))
-    paths_list, names_list = sorted_two_list(paths_list, names_list)
+    paths_list, names_list = sort_two_list(paths_list, names_list)
     return paths_list, names_list
 
 
-def sorted_two_list(list1, list2):
+def sort_two_list(list1, list2):
     """
     排序两个列表
     :param list1: 列表1
