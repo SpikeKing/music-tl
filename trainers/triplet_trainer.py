@@ -111,6 +111,7 @@ class TripletTrainer(TrainerBase):
             epochs=self.config.num_epochs,
             validation_data=[X_te, np.ones(len(anc_ins_te))],
             verbose=1,
+            shuffle=False,
             callbacks=self.callbacks)
 
         self.model.save(os.path.join(self.config.cp_dir, "triplet_loss_model.h5"))  # 存储模型
@@ -174,7 +175,6 @@ class TripletTrainer(TrainerBase):
 
 
 class TlMetric(Callback):
-
     def on_epoch_end(self, batch, logs=None):
         y_pred = self.model.predict([self.validation_data[0], self.validation_data[1], self.validation_data[2]])  # 验证模型
         clz_test = len(self.validation_data[0]) / 18

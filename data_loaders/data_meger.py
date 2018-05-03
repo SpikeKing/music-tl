@@ -70,6 +70,7 @@ def merge_data(data_path, n_prc=40):
 
     results = []
     p = Pool(processes=n_prc)  # 进程数尽量与核数匹配
+    count = 0
     for path in path_list:
         clz_name = get_path_clz(path)
         if clz_name not in label_dict:
@@ -77,6 +78,9 @@ def merge_data(data_path, n_prc=40):
             continue
         label = label_dict[clz_name]
         results.append(p.apply_async(func, args=(path, label,)))
+        count += 1
+        if count == 19 * 100:
+            break
 
     count = 0
     f_list, l_list, n_list = [], [], []
@@ -94,7 +98,7 @@ def merge_data(data_path, n_prc=40):
             print "\t[INFO] count %s" % count
     print "\t[INFO] count %s" % count
 
-    o_path = os.path.join(ROOT_DIR, "experiments", "data_test.npz")
+    o_path = os.path.join(ROOT_DIR, "experiments", "data_train_100.npz")
     np.savez(o_path, f_list=f_list, l_list=l_list, n_list=n_list)
     res_data = np.load(o_path)
     print "[INFO] 最终数据: %s %s, %s %s, %s %s" % (
@@ -103,5 +107,5 @@ def merge_data(data_path, n_prc=40):
 
 
 if __name__ == '__main__':
-    train_path = os.path.join(ROOT_DIR, 'experiments', 'npy_data', 'test')
+    train_path = os.path.join(ROOT_DIR, 'experiments', 'npy_data', 'train')
     merge_data(data_path=train_path)

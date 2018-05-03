@@ -19,7 +19,7 @@ class TripletModel(ModelBase):
     TripletLoss模型
     """
 
-    MARGIN = 10.0  # 超参
+    MARGIN = 1.0  # 超参
 
     def __init__(self, config):
         super(TripletModel, self).__init__(config)
