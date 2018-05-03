@@ -36,9 +36,12 @@ def process_config(json_file):
     exp_dir = os.path.join(ROOT_DIR, "experiments")
     mkdir_if_not_exist(exp_dir)  # 创建文件夹
 
-    config.tb_dir = os.path.join(exp_dir, config.exp_name, "logs/")  # 日志
-    config.cp_dir = os.path.join(exp_dir, config.exp_name, "checkpoints/")  # 模型
-    config.img_dir = os.path.join(exp_dir, config.exp_name, "images/")  # 网络
+    exp_name = str(config.exp_name)
+    print('[INFO] 工程名: %s' % exp_name)
+
+    config.tb_dir = os.path.join(exp_dir, exp_name, "logs/")  # 日志
+    config.cp_dir = os.path.join(exp_dir, exp_name, "checkpoints/")  # 模型
+    config.img_dir = os.path.join(exp_dir, exp_name, "images/")  # 网络
 
     mkdir_if_not_exist(config.tb_dir)  # 创建文件夹
     mkdir_if_not_exist(config.cp_dir)  # 创建文件夹
