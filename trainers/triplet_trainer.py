@@ -222,7 +222,13 @@ class TlMetric(Callback):
         print np.min(X_te['anc_input'])
         print np.min(X_te['pos_input'])
         print np.min(X_te['neg_input'])
+        print np.average(X_te['anc_input'])
+        print np.average(X_te['pos_input'])
+        print np.average(X_te['neg_input'])
         y_pred = self.model.predict(X_te)  # 验证模型
+        print y_pred[:, 0:128]
+        print y_pred[:, 128:256]
+        print y_pred[:, 256:]
         clz_test = len(self.validation_data[0]) / 18
         TripletTrainer.show_acc_facets(y_pred, y_pred.shape[0] / clz_test, clz_test)
 
