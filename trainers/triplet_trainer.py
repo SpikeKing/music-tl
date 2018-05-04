@@ -67,8 +67,11 @@ class TripletTrainer(TrainerBase):
 
         x_train_ = x_train[:19 * 100]
         y_train_ = y_train[:19 * 100]
-        x_test_ = x_train[19 * 100:19 * 120]
-        y_test_ = y_train[19 * 100:19 * 120]
+        # x_test_ = x_train[19 * 100:19 * 120]
+        # y_test_ = y_train[19 * 100:19 * 120]
+
+        x_test_ = x_test
+        y_test_ = y_test
 
         self.train_core(x_train_, y_train_, x_test_, y_test_)
 
@@ -134,7 +137,8 @@ class TripletTrainer(TrainerBase):
             X, np.ones(len(anc_ins)),
             batch_size=self.config.batch_size,
             epochs=self.config.num_epochs,
-            validation_data=[X_te, np.ones(len(anc_ins_te))],
+            # validation_data=[X_te, np.ones(len(anc_ins_te))],
+            validation_data=[X, np.ones(len(anc_ins))],
             verbose=1,
             callbacks=self.callbacks)
 
@@ -216,19 +220,22 @@ class TlMetric(Callback):
             'pos_input': self.validation_data[1],
             'neg_input': self.validation_data[2]
         }
-        print np.max(X_te['anc_input'])
-        print np.max(X_te['pos_input'])
-        print np.max(X_te['neg_input'])
-        print np.min(X_te['anc_input'])
-        print np.min(X_te['pos_input'])
-        print np.min(X_te['neg_input'])
-        print np.average(X_te['anc_input'])
-        print np.average(X_te['pos_input'])
-        print np.average(X_te['neg_input'])
+        # print X_te['anc_input'].shape
+        # print X_te['pos_input'].shape
+        # print X_te['neg_input'].shape
+        # print np.max(X_te['anc_input'])
+        # print np.max(X_te['pos_input'])
+        # print np.max(X_te['neg_input'])
+        # print np.min(X_te['anc_input'])
+        # print np.min(X_te['pos_input'])
+        # print np.min(X_te['neg_input'])
+        # print np.average(X_te['anc_input'])
+        # print np.average(X_te['pos_input'])
+        # print np.average(X_te['neg_input'])
         y_pred = self.model.predict(X_te)  # 验证模型
-        print y_pred[:, 0:128]
-        print y_pred[:, 128:256]
-        print y_pred[:, 256:]
+        # print y_pred[:, 0:128][0]
+        # print y_pred[:, 128:256][0]
+        # print y_pred[:, 256:][0]
         clz_test = len(self.validation_data[0]) / 18
         TripletTrainer.show_acc_facets(y_pred, y_pred.shape[0] / clz_test, clz_test)
 
