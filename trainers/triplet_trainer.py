@@ -138,7 +138,7 @@ class TripletTrainer(TrainerBase):
             batch_size=self.config.batch_size,
             epochs=self.config.num_epochs,
             # validation_data=[X_te, np.ones(len(anc_ins_te))],
-            validation_data=[X, np.ones(len(anc_ins))],
+            validation_data=[X_te, np.ones(len(anc_ins_te))],
             verbose=1,
             callbacks=self.callbacks)
 
@@ -158,27 +158,21 @@ class TripletTrainer(TrainerBase):
         """
         print "[INFO] trainer - n_clz: %s" % n
         print "[INFO] trainer - clz_size: %s" % clz_size
-        min_list, max_list, avg_list, acc_list = [], [], [], []
-        for i in range(clz_size):
-            # print "[INFO] trainer - clz %s" % i
-            final = y_pred[n * i:n * (i + 1), :]
-            anchor, positive, negative = final[:, 0:128], final[:, 128:256], final[:, 256:]
+        # print "[INFO] trainer - clz %s" % i
+        final = y_pred
+        anchor, positive, negative = final[:, 0:128], final[:, 128:256], final[:, 256:]
 
-            pos_dist = np.sum(np.square(anchor - positive), axis=-1, keepdims=True)
-            neg_dist = np.sum(np.square(anchor - negative), axis=-1, keepdims=True)
-            basic_loss = pos_dist - neg_dist
-            r_count = basic_loss[np.where(basic_loss < 0)].shape[0]
-            # print "[INFO] trainer - distance - min: %s, max: %s, avg: %s" % (
-            #     np.min(basic_loss), np.max(basic_loss), np.average(basic_loss))
-            # print "[INFO] acc: %s" % (float(r_count) / float(n))
-            # print ""
-            min_list.append(np.min(basic_loss))
-            max_list.append(np.max(basic_loss))
-            avg_list.append(np.average(basic_loss))
-            acc_list.append(np.average(float(r_count) / float(n)))
+        pos_dist = np.sum(np.square(anchor - positive), axis=-1, keepdims=True)
+        neg_dist = np.sum(np.square(anchor - negative), axis=-1, keepdims=True)
+        basic_loss = pos_dist - neg_dist
+        r_count = np.sum(np.where(basic_loss < 0, 1, 0))
+        res_min = np.min(basic_loss)
+        res_max = np.max(basic_loss)
+        res_avg = np.average(basic_loss)
+        res_acc = np.average(float(r_count) / float(len(basic_loss)))
 
-        print "[INFO] min: %s, max: %s, avg: %s, acc: %0.4f%%" % (
-            np.average(min_list), np.average(max_list), np.average(avg_list), np.average(acc_list))
+        print "[INFO] min: %s, max: %s, avg: %s, acc: %0.4f%% (%s / %s)" % (
+            res_min, res_max, res_avg, res_acc * 100, r_count, len(basic_loss))
 
     @staticmethod
     def create_pairs(x, digit_indices, num_classes):
