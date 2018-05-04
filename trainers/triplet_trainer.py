@@ -203,9 +203,9 @@ class TripletTrainer(TrainerBase):
 class TlMetric(Callback):
     def on_epoch_end(self, batch, logs=None):
         X_te0 = {
-            'anc_input': self.validation_data[0],
-            'pos_input': self.validation_data[1],
-            'neg_input': self.validation_data[2]
+            'anc_input': self.validation_data[0][:10],
+            'pos_input': self.validation_data[1][:10],
+            'neg_input': self.validation_data[2][:10]
         }
         y_pred0 = self.model.predict(X_te0)  # 验证模型
         # X_te1 = {
