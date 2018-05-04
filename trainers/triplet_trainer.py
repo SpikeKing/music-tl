@@ -69,8 +69,6 @@ class TripletTrainer(TrainerBase):
         y_train_ = y_train[:19 * 100]
         x_test_ = x_train[19 * 100:19 * 120]
         y_test_ = y_train[19 * 100:19 * 120]
-        y_test_ = to_categorical(y_test_)
-        y_test_ = np.argmax(y_test_, axis=1)
 
         self.train_core(x_train_, y_train_, x_test_, y_test_)
 
@@ -94,7 +92,7 @@ class TripletTrainer(TrainerBase):
         print "[INFO] 测试 - 类别数: %s" % clz_test
         print "[INFO] X_test.shape: %s, y_test.shape: %s" \
               % (str(x_test.shape), str(y_test.shape))
-        test_indices = [np.where(y_test == i)[0] for i in range(clz_test)]
+        test_indices = [np.where(y_test == i)[0] for i in sorted(np.unique(y_test))]
         print "[INFO] 测试 - 类别数: %s" % test_indices[0]
         te_pairs = self.create_pairs(x_test, test_indices, clz_test)
 
