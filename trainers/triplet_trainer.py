@@ -9,10 +9,12 @@ import warnings
 
 import numpy as np
 from keras.callbacks import TensorBoard, ModelCheckpoint, Callback
+from keras.models import load_model
 from sklearn.exceptions import UndefinedMetricWarning
 from sklearn.metrics import precision_recall_fscore_support
 
 from bases.trainer_base import TrainerBase
+from models.triplet_model import TripletModel
 from root_dir import ROOT_DIR
 from utils.np_utils import prp_2_oh_array
 from utils.utils import mkdir_if_not_exist
@@ -62,13 +64,22 @@ class TripletTrainer(TrainerBase):
         x_test = self.data[1][0]
         y_test = np.argmax(self.data[1][1], axis=1)
 
+        self.train_core(x_train, y_train, x_test, y_test)
+
+    def train_core(self, x_train, y_train, x_test, y_test):
+
         clz_train = len(np.unique(y_train))
         print "[INFO] 训练 - 类别数: %s" % clz_train
         print "[INFO] X_train.shape: %s, y_train.shape: %s" \
               % (str(x_train.shape), str(y_train.shape))
 
-        train_indices = [np.where(y_train == i)[0] for i in range(clz_train)]
+        train_indices = [np.where(y_train == i)[0] for i in sorted(np.unique(y_train))]
         tr_pairs = self.create_pairs(x_train, train_indices, clz_train)
+
+        tr_error = np.isnan(tr_pairs).sum()
+        print('[INFO] tr_pairs 异常数据数: %s' % tr_error)
+        if tr_error > 0:
+            raise Exception('[Exception] Nan数据错误!!!')
 
         clz_test = len(np.unique(y_test))
         print "[INFO] 测试 - 类别数: %s" % clz_test
@@ -77,13 +88,18 @@ class TripletTrainer(TrainerBase):
         test_indices = [np.where(y_test == i)[0] for i in range(clz_test)]
         te_pairs = self.create_pairs(x_test, test_indices, clz_test)
 
+        te_error = np.isnan(te_pairs).sum()
+        print('[INFO] te_pairs 异常数据数: %s' % te_error)
+        if te_error > 0:
+            raise Exception('[Exception] Nan数据错误!!!')
+
         anc_ins = tr_pairs[:, 0]
         pos_ins = tr_pairs[:, 1]
         neg_ins = tr_pairs[:, 2]
 
-        print "anc_ins: %s" % str(anc_ins.shape)
-        print "pos_ins: %s" % str(pos_ins.shape)
-        print "neg_ins: %s" % str(neg_ins.shape)
+        print "[INFO] anc_ins: %s" % str(anc_ins.shape)
+        print "[INFO] pos_ins: %s" % str(pos_ins.shape)
+        print "[INFO] neg_ins: %s" % str(neg_ins.shape)
 
         X = {
             'anc_input': anc_ins,
@@ -101,9 +117,9 @@ class TripletTrainer(TrainerBase):
             'neg_input': neg_ins_te
         }
 
-        print "anc_ins_te: %s" % str(anc_ins_te.shape)
-        print "pos_ins_te: %s" % str(pos_ins_te.shape)
-        print "neg_ins_te: %s" % str(neg_ins_te.shape)
+        print "[INFO] anc_ins_te: %s" % str(anc_ins_te.shape)
+        print "[INFO] pos_ins_te: %s" % str(pos_ins_te.shape)
+        print "[INFO] neg_ins_te: %s" % str(neg_ins_te.shape)
 
         self.model.fit(
             X, np.ones(len(anc_ins)),
@@ -111,7 +127,6 @@ class TripletTrainer(TrainerBase):
             epochs=self.config.num_epochs,
             validation_data=[X_te, np.ones(len(anc_ins_te))],
             verbose=1,
-            shuffle=False,
             callbacks=self.callbacks)
 
         self.model.save(os.path.join(self.config.cp_dir, "triplet_loss_model.h5"))  # 存储模型
@@ -140,16 +155,16 @@ class TripletTrainer(TrainerBase):
             neg_dist = np.sum(np.square(anchor - negative), axis=-1, keepdims=True)
             basic_loss = pos_dist - neg_dist
             r_count = basic_loss[np.where(basic_loss < 0)].shape[0]
-            print "[INFO] trainer - distance - min: %s, max: %s, avg: %s" % (
-                np.min(basic_loss), np.max(basic_loss), np.average(basic_loss))
-            print "[INFO] acc: %s" % (float(r_count) / float(n))
-            print ""
+            # print "[INFO] trainer - distance - min: %s, max: %s, avg: %s" % (
+            #     np.min(basic_loss), np.max(basic_loss), np.average(basic_loss))
+            # print "[INFO] acc: %s" % (float(r_count) / float(n))
+            # print ""
             min_list.append(np.min(basic_loss))
             max_list.append(np.max(basic_loss))
             avg_list.append(np.average(basic_loss))
             acc_list.append(np.average(float(r_count) / float(n)))
 
-        print "[INFO] min: %s, max: %s, avg: %s, acc: %s" % (
+        print "[INFO] min: %s, max: %s, avg: %s, acc: %0.4f%%" % (
             np.average(min_list), np.average(max_list), np.average(avg_list), np.average(acc_list))
 
     @staticmethod
@@ -176,7 +191,12 @@ class TripletTrainer(TrainerBase):
 
 class TlMetric(Callback):
     def on_epoch_end(self, batch, logs=None):
-        y_pred = self.model.predict([self.validation_data[0], self.validation_data[1], self.validation_data[2]])  # 验证模型
+        X_te = {
+            'anc_input': self.validation_data[0],
+            'pos_input': self.validation_data[1],
+            'neg_input': self.validation_data[2]
+        }
+        y_pred = self.model.predict(X_te)  # 验证模型
         clz_test = len(self.validation_data[0]) / 18
         TripletTrainer.show_acc_facets(y_pred, y_pred.shape[0] / clz_test, clz_test)
 
