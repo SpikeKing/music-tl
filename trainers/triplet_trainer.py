@@ -181,9 +181,14 @@ class TripletTrainer(TrainerBase):
         """
 
         pairs = []
-        n = min([len(digit_indices[d]) for d in range(num_classes)]) - 1  # 最小类别数
+        clz_samples = 19
+        # n = min([len(digit_indices[d]) for d in range(num_classes)]) - 1  # 最小类别数
+        n = clz_samples
         print "[INFO] create_pairs - n: %s, num_classes: %s" % (n, num_classes)
         for d in range(num_classes):
+            if len(digit_indices[d]) < clz_samples:
+                print('[INFO] 去除样本类别: %s' % d)
+                continue
             for i in range(n):
                 z1, z2 = digit_indices[d][i], digit_indices[d][i + 1]
                 inc = random.randrange(1, num_classes)
