@@ -10,7 +10,6 @@ from keras.layers import Dense, Conv2D, MaxPooling2D, Dropout, Flatten, K, Conca
     BatchNormalization, MaxPooling1D, LSTM
 from keras.optimizers import Adam
 from keras.utils import plot_model
-import tensorflow as tf
 
 from bases.model_base import ModelBase
 
