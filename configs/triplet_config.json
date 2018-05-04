@@ -1,5 +1,5 @@
 {
   "exp_name": "music_tl",
-  "num_epochs": 1,
-  "batch_size": 64
+  "num_epochs": 100,
+  "batch_size": 1024
 }
