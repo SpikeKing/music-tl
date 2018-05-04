@@ -64,8 +64,10 @@ class TripletTrainer(TrainerBase):
         x_test = self.data[1][0]
         y_test = np.argmax(self.data[1][1], axis=1)
 
-        x_test = x_test[:19 * 50]
-        y_test = y_test[:19 * 50]
+        x_train = x_train[:19 * 100]
+        y_train = y_train[:19 * 100]
+        x_test = x_test[:19 * 10]
+        y_test = y_test[:19 * 10]
 
         self.train_core(x_train, y_train, x_test, y_test)
 
