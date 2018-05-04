@@ -64,6 +64,9 @@ class TripletTrainer(TrainerBase):
         x_test = self.data[1][0]
         y_test = np.argmax(self.data[1][1], axis=1)
 
+        x_test = x_test[:19 * 50]
+        y_test = y_test[:19 * 50]
+
         self.train_core(x_train, y_train, x_test, y_test)
 
     def train_core(self, x_train, y_train, x_test, y_test):
@@ -196,8 +199,8 @@ class TripletTrainer(TrainerBase):
                     dn = (d + inc) % num_classes
                     if len(digit_indices[dn]) >= clz_samples:
                         break
-                    else:
-                        print('[INFO] 去除样本类别: %s' % dn)
+                    # else:
+                    #     print('[INFO] 去除样本类别: %s' % dn)
                 z3 = digit_indices[dn][i]
                 pairs += [[x[z1], x[z2], x[z3]]]
         return np.array(pairs)
