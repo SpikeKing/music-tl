@@ -62,8 +62,8 @@ class TripletTrainer(TrainerBase):
     def train(self):
         x_train = self.data[0][0]
         y_train = np.argmax(self.data[0][1], axis=1)
-        x_test = self.data[1][0]
-        y_test = np.argmax(self.data[1][1], axis=1)
+        x_test = self.data[1][0][:19 * 100]
+        y_test = np.argmax(self.data[1][1], axis=1)[:19 * 100]
 
         self.train_core(x_train, y_train, x_test, y_test)
 
@@ -140,7 +140,7 @@ class TripletTrainer(TrainerBase):
         self.show_acc_facets(y_pred, y_pred.shape[0] / clz_test, clz_test)
 
     @staticmethod
-    def show_acc_facets(y_pred, n, clz_size):
+    def show_acc_facets(anchor, positive, negative, clz_size):
         """
         展示模型的准确率
         :param y_pred: 测试结果数据组
@@ -148,11 +148,10 @@ class TripletTrainer(TrainerBase):
         :param clz_size: 类别数
         :return: 打印数据
         """
-        print "[INFO] trainer - n_clz: %s" % n
         print "[INFO] trainer - clz_size: %s" % clz_size
         # print "[INFO] trainer - clz %s" % i
-        final = y_pred
-        anchor, positive, negative = final[:, 0:128], final[:, 128:256], final[:, 256:]
+        # final = y_pred
+        # anchor, positive, negative = final[:, 0:128], final[:, 128:256], final[:, 256:]
 
         pos_dist = np.sum(np.square(anchor - positive), axis=-1, keepdims=True)
         neg_dist = np.sum(np.square(anchor - negative), axis=-1, keepdims=True)
@@ -201,29 +200,28 @@ class TripletTrainer(TrainerBase):
 
 class TlMetric(Callback):
     def on_epoch_end(self, batch, logs=None):
-        X_te = {
+        X_te0 = {
             'anc_input': self.validation_data[0],
+            'pos_input': self.validation_data[0],
+            'neg_input': self.validation_data[0]
+        }
+        y_pred0 = self.model.predict(X_te0)  # 验证模型
+        X_te1 = {
+            'anc_input': self.validation_data[1],
             'pos_input': self.validation_data[1],
+            'neg_input': self.validation_data[1]
+        }
+        y_pred1 = self.model.predict(X_te1)  # 验证模型
+        X_te2 = {
+            'anc_input': self.validation_data[2],
+            'pos_input': self.validation_data[2],
             'neg_input': self.validation_data[2]
         }
-        # print X_te['anc_input'].shape
-        # print X_te['pos_input'].shape
-        # print X_te['neg_input'].shape
-        # print np.max(X_te['anc_input'])
-        # print np.max(X_te['pos_input'])
-        # print np.max(X_te['neg_input'])
-        # print np.min(X_te['anc_input'])
-        # print np.min(X_te['pos_input'])
-        # print np.min(X_te['neg_input'])
-        # print np.average(X_te['anc_input'])
-        # print np.average(X_te['pos_input'])
-        # print np.average(X_te['neg_input'])
-        y_pred = self.model.predict(X_te)  # 验证模型
-        # print y_pred[:, 0:128][0]
-        # print y_pred[:, 128:256][0]
-        # print y_pred[:, 256:][0]
+        y_pred2 = self.model.predict(X_te2)  # 验证模型
         clz_test = len(self.validation_data[0]) / 18
-        TripletTrainer.show_acc_facets(y_pred, y_pred.shape[0] / clz_test, clz_test)
+
+        TripletTrainer.show_acc_facets(
+            y_pred0[:, :128], y_pred1[:, :128], y_pred2[:, :128], clz_test)
 
 
 class FPRMetric(Callback):
