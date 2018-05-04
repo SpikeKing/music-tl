@@ -204,26 +204,28 @@ class TlMetric(Callback):
     def on_epoch_end(self, batch, logs=None):
         X_te0 = {
             'anc_input': self.validation_data[0],
-            'pos_input': self.validation_data[0],
-            'neg_input': self.validation_data[0]
-        }
-        y_pred0 = self.model.predict(X_te0)  # 验证模型
-        X_te1 = {
-            'anc_input': self.validation_data[1],
             'pos_input': self.validation_data[1],
-            'neg_input': self.validation_data[1]
-        }
-        y_pred1 = self.model.predict(X_te1)  # 验证模型
-        X_te2 = {
-            'anc_input': self.validation_data[2],
-            'pos_input': self.validation_data[2],
             'neg_input': self.validation_data[2]
         }
-        y_pred2 = self.model.predict(X_te2)  # 验证模型
+        y_pred0 = self.model.predict(X_te0)  # 验证模型
+        # X_te1 = {
+        #     'anc_input': self.validation_data[1],
+        #     'pos_input': self.validation_data[1],
+        #     'neg_input': self.validation_data[1]
+        # }
+        # y_pred1 = self.model.predict(X_te1)  # 验证模型
+        # X_te2 = {
+        #     'anc_input': self.validation_data[2],
+        #     'pos_input': self.validation_data[2],
+        #     'neg_input': self.validation_data[2]
+        # }
+        # y_pred2 = self.model.predict(X_te2)  # 验证模型
         clz_test = len(self.validation_data[0]) / 18
 
-        TripletTrainer.show_acc_facets(
-            y_pred0[:, :128], y_pred1[:, :128], y_pred2[:, :128], clz_test)
+        acc_str = TripletTrainer.show_acc_facets(
+            y_pred0[:, :128], y_pred0[:, :128], y_pred0[:, :128], clz_test)
+
+        self.model.save(os.path.join(ROOT_DIR, 'experiments/music_tl/checkpoints', "triplet_loss_model_%s.h5" % acc_str))  # 存储模型
 
 
 class FPRMetric(Callback):
