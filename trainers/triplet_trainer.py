@@ -87,6 +87,7 @@ class TripletTrainer(TrainerBase):
         print "[INFO] X_test.shape: %s, y_test.shape: %s" \
               % (str(x_test.shape), str(y_test.shape))
         test_indices = [np.where(y_test == i)[0] for i in range(clz_test)]
+        print "[INFO] 测试 - 类别数: %s" % test_indices[0]
         te_pairs = self.create_pairs(x_test, test_indices, clz_test)
 
         print('[INFO] te_pairs.shape: %s' % str(te_pairs.shape))
@@ -181,6 +182,7 @@ class TripletTrainer(TrainerBase):
 
         pairs = []
         n = min([len(digit_indices[d]) for d in range(num_classes)]) - 1  # 最小类别数
+        print "[INFO] create_pairs - n: %s, num_classes: %s" % (n, num_classes)
         for d in range(num_classes):
             for i in range(n):
                 z1, z2 = digit_indices[d][i], digit_indices[d][i + 1]
