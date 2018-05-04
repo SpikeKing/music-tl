@@ -156,7 +156,7 @@ class TripletTrainer(TrainerBase):
         print "[INFO] trainer - clz_size: %s" % clz_size
         min_list, max_list, avg_list, acc_list = [], [], [], []
         for i in range(clz_size):
-            # print "[INFO] trainer - clz %s" % i
+            print "[INFO] trainer - clz %s" % i
             final = y_pred[n * i:n * (i + 1), :]
             anchor, positive, negative = final[:, 0:128], final[:, 128:256], final[:, 256:]
 
@@ -164,10 +164,10 @@ class TripletTrainer(TrainerBase):
             neg_dist = np.sum(np.square(anchor - negative), axis=-1, keepdims=True)
             basic_loss = pos_dist - neg_dist
             r_count = basic_loss[np.where(basic_loss < 0)].shape[0]
-            # print "[INFO] trainer - distance - min: %s, max: %s, avg: %s" % (
-            #     np.min(basic_loss), np.max(basic_loss), np.average(basic_loss))
-            # print "[INFO] acc: %s" % (float(r_count) / float(n))
-            # print ""
+            print "[INFO] trainer - distance - min: %s, max: %s, avg: %s" % (
+                np.min(basic_loss), np.max(basic_loss), np.average(basic_loss))
+            print "[INFO] acc: %s" % (float(r_count) / float(n))
+            print ""
             min_list.append(np.min(basic_loss))
             max_list.append(np.max(basic_loss))
             avg_list.append(np.average(basic_loss))
@@ -216,6 +216,12 @@ class TlMetric(Callback):
             'pos_input': self.validation_data[1],
             'neg_input': self.validation_data[2]
         }
+        print np.max(X_te['anc_input'])
+        print np.max(X_te['pos_input'])
+        print np.max(X_te['neg_input'])
+        print np.min(X_te['anc_input'])
+        print np.min(X_te['pos_input'])
+        print np.min(X_te['neg_input'])
         y_pred = self.model.predict(X_te)  # 验证模型
         clz_test = len(self.validation_data[0]) / 18
         TripletTrainer.show_acc_facets(y_pred, y_pred.shape[0] / clz_test, clz_test)
