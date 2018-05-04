@@ -183,7 +183,7 @@ class TripletTrainer(TrainerBase):
         pairs = []
         clz_samples = 19
         # n = min([len(digit_indices[d]) for d in range(num_classes)]) - 1  # 最小类别数
-        n = clz_samples
+        n = clz_samples - 1
         print "[INFO] create_pairs - n: %s, num_classes: %s" % (n, num_classes)
         for d in range(num_classes):
             if len(digit_indices[d]) < clz_samples:
