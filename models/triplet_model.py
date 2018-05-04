@@ -10,6 +10,7 @@ from keras.layers import Dense, Conv2D, MaxPooling2D, Dropout, Flatten, K, Conca
     BatchNormalization, MaxPooling1D, LSTM
 from keras.optimizers import Adam
 from keras.utils import plot_model
+import tensorflow as tf
 
 from bases.model_base import ModelBase
 
@@ -30,6 +31,8 @@ class TripletModel(ModelBase):
         self.model = self.triplet_loss_model_v2()
 
     def triplet_loss_model(self):
+        tf.reset_default_graph()
+
         anc_input = Input(shape=(28, 28, 1), name='anc_input')  # anchor
         pos_input = Input(shape=(28, 28, 1), name='pos_input')  # positive
         neg_input = Input(shape=(28, 28, 1), name='neg_input')  # negative
@@ -85,7 +88,7 @@ class TripletModel(ModelBase):
         out = Dense(128, activation='relu')(x)
 
         model = Model(ins_input, out)
-        plot_model(model, to_file=os.path.join(self.config.img_dir, "base_model.png"), show_shapes=True)  # 绘制模型图
+        # plot_model(model, to_file=os.path.join(self.config.img_dir, "base_model.png"), show_shapes=True)  # 绘制模型图
         return model
 
     def triplet_loss_model_v2(self):
