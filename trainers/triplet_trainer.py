@@ -220,9 +220,9 @@ class TlMetric(Callback):
             'pos_input': self.validation_data[1],
             'neg_input': self.validation_data[2]
         }
-        # print X_te['anc_input'].shape
-        # print X_te['pos_input'].shape
-        # print X_te['neg_input'].shape
+        print X_te['anc_input'].shape
+        print X_te['pos_input'].shape
+        print X_te['neg_input'].shape
         # print np.max(X_te['anc_input'])
         # print np.max(X_te['pos_input'])
         # print np.max(X_te['neg_input'])
