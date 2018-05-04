@@ -10,6 +10,7 @@ import warnings
 import numpy as np
 from keras.callbacks import TensorBoard, ModelCheckpoint, Callback
 from keras.models import load_model
+from keras.utils import to_categorical
 from sklearn.exceptions import UndefinedMetricWarning
 from sklearn.metrics import precision_recall_fscore_support
 
@@ -68,6 +69,8 @@ class TripletTrainer(TrainerBase):
         y_train_ = y_train[:19 * 100]
         x_test_ = x_train[19 * 100:19 * 120]
         y_test_ = y_train[19 * 100:19 * 120]
+        y_test_ = to_categorical(y_test_)
+        y_test_ = np.argmax(y_test_, axis=1)
 
         self.train_core(x_train_, y_train_, x_test_, y_test_)
 
