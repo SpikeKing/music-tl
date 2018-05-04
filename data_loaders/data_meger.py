@@ -6,6 +6,7 @@ Created by C. L. Wang on 2018/5/3
 """
 import collections
 import numpy as np
+import time
 import sys
 import os
 
@@ -64,6 +65,8 @@ def func(path, label):
 
 
 def merge_data(data_path, n_prc=40):
+    start_time = datetime.now()  # 起始时间
+    print "[INFO] 当前时间: %s" % timestamp_2_readable(time.time())
     path_list, _ = traverse_dir_files(data_path)  # 路径列表
     label_dict = get_label_dict(path_list)
     print "[INFO] 音频总数: %s" % len(path_list)
@@ -104,6 +107,9 @@ def merge_data(data_path, n_prc=40):
     print "[INFO] 最终数据: %s %s, %s %s, %s %s" % (
         'f_list', res_data['f_list'].shape, 'l_list', res_data['l_list'].shape, 'n_list', res_data['n_list'].shape)
     print "[INFO] 最终特征: %s, %s, %s" % (res_data['f_list'][0], res_data['l_list'][0], res_data['n_list'][0])
+    print "[INFO] 结束时间: %s" % timestamp_2_readable(time.time())
+    elapsed_time = datetime.now() - start_time  # 终止时间
+    print "[INFO] 耗时: %s (秒)" % elapsed_time
 
 
 if __name__ == '__main__':
