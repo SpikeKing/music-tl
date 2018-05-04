@@ -94,7 +94,9 @@ class TripletModel(ModelBase):
             sub_model = BatchNormalization()(sub_model)
             sub_model = MaxPooling1D(pool_size=pool_size)(sub_model)
             sub_model = LSTM(128, return_sequences=True)(sub_model)
+            sub_model = BatchNormalization()(sub_model)
             sub_model = LSTM(128, return_sequences=True)(sub_model)
+            sub_model = BatchNormalization()(sub_model)
             sub_model = LSTM(128)(sub_model)
             main_output = Dropout(dropout_rate)(sub_model)
 
