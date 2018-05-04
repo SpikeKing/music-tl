@@ -80,10 +80,10 @@ class TripletTrainer(TrainerBase):
         tr_pairs = self.create_pairs(x_train, train_indices, clz_train)
         print('[INFO] tr_pairs.shape: %s' % str(tr_pairs.shape))
 
-        # tr_error = np.isnan(tr_pairs).sum()
-        # print('[INFO] tr_pairs 异常数据数: %s' % tr_error)
-        # if tr_error > 0:
-        #     raise Exception('[Exception] Nan数据错误!!!')
+        tr_error = np.isnan(tr_pairs).sum()
+        print('[INFO] tr_pairs 异常数据数: %s' % tr_error)
+        if tr_error > 0:
+            raise Exception('[Exception] Nan数据错误!!!')
 
         clz_test = len(np.unique(y_test))
         print "[INFO] 测试 - 类别数: %s" % clz_test
@@ -94,10 +94,10 @@ class TripletTrainer(TrainerBase):
         te_pairs = self.create_pairs(x_test, test_indices, clz_test)
 
         print('[INFO] te_pairs.shape: %s' % str(te_pairs.shape))
-        # te_error = np.isnan(te_pairs).sum()
-        # print('[INFO] te_pairs 异常数据数: %s' % te_error)
-        # if te_error > 0:
-        #     raise Exception('[Exception] Nan数据错误!!!')
+        te_error = np.isnan(te_pairs).sum()
+        print('[INFO] te_pairs 异常数据数: %s' % te_error)
+        if te_error > 0:
+            raise Exception('[Exception] Nan数据错误!!!')
 
         anc_ins = tr_pairs[:, 0]
         pos_ins = tr_pairs[:, 1]
