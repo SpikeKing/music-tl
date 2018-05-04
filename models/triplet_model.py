@@ -72,8 +72,6 @@ class TripletModel(ModelBase):
         return model
 
     def deep_conv_lstm(self):
-        tf.reset_default_graph()
-
         def cnn_lstm_cell(cell_input):
             """
             基于DeepConvLSTM算法, 创建子模型
