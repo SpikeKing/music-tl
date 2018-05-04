@@ -15,7 +15,6 @@ if p not in sys.path:
     sys.path.append(p)
 
 from multiprocessing import Pool
-
 from root_dir import ROOT_DIR
 from utils.utils import *
 
