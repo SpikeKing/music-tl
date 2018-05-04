@@ -66,8 +66,8 @@ class TripletTrainer(TrainerBase):
 
         x_train = x_train[:19 * 100]
         y_train = y_train[:19 * 100]
-        x_test = x_test[:19 * 10]
-        y_test = y_test[:19 * 10]
+        x_test = x_test[19 * 10:19 * 20]
+        y_test = y_test[19 * 10:19 * 20]
 
         self.train_core(x_train, y_train, x_test, y_test)
 
