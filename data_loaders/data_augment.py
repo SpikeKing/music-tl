@@ -4,7 +4,7 @@
 Copyright (c) 2018. All rights reserved.
 Created by C. L. Wang on 2018/5/2
 
-音频数据增强（Data Augment）
+音频数据增强（Data Augment），存储为32*dim的npy格式
 """
 
 import os
@@ -127,6 +127,30 @@ def audio_low(y, sr, name_id, folder):
     np.save(file3, get_feature(yn3, sr))
 
 
+def get_feature(y, sr, dim=256):
+    """
+    特征属性:
+    1-Zero Crossing Rate: 短时平均过零率, 即每帧信号内, 信号过零点的次数, 体现的是频率特性.
+    2-Energy: 短时能量, 即每帧信号的平方和, 体现的是信号能量的强弱.
+    3-Entropy of Energy: 能量熵, 跟频谱的谱熵（Spectral Entropy）有点类似, 不过它描述的是信号的时域分布情况, 体现的是连续性.
+    4-Spectral Centroid: 频谱中心又称为频谱一阶距, 频谱中心的值越小, 表明越多的频谱能量集中在低频范围内,
+        如:voice与music相比, 通常spectral centroid较低.
+    5-Spectral Spread: 频谱延展度, 又称为频谱二阶中心矩, 它描述了信号在频谱中心周围的分布状况.
+    6-Spectral Entropy: 谱熵, 根据熵的特性可以知道, 分布越均匀, 熵越大, 能量熵反应了每一帧信号的均匀程度,
+        如说话人频谱由于共振峰存在显得不均匀, 而白噪声的频谱就更加均匀, 借此进行VAD便是应用之一.
+    7-Spectral Flux: 频谱通量, 描述的是相邻帧频谱的变化情况.
+    8-Spectral Rolloff: 频谱滚降点.
+    9~21-MFCCs: 就是大名鼎鼎的梅尔倒谱系数, 这个网上资料非常多, 也是非常重要的音频特征.
+    22~33-Chroma Vector: 这个有12个参数, 对应就是12级音阶, 这个在音乐声里可能用的比较多.
+    34-Chroma Deviation: 这个就是Chroma Vector的标准方差.
+    :return: 音频特征[左通道, 右通道]
+    """
+    f_ws = len(y) / (dim + 4)  # 加4，避免数据不足
+    features = audioFeatureExtraction.stFeatureExtraction(y, sr, f_ws, f_ws)
+    features = features[1:33][:, :dim]  # 定向选择特征，（32*dim）
+    return features
+
+
 def generate_augment(params):
     """
     音频增强
@@ -152,16 +176,31 @@ def generate_augment(params):
         print '[Exception] 异常: %s' % e
 
 
-def mp_augment(n_process=40):
+def mp_augment(raw_dir, npy_dir, n_process=40):
     """
     多进程的音频增强
+    :param raw_dir: 音频文件文件夹
+    :param npy_dir: npy文件的存储文件夹
     :param n_process: 进程数
     :return:
     """
+    paths, names = traverse_dir_files(raw_dir)
+    p = Pool(processes=n_process)  # 进程数尽量与核数匹配
+    print "[INFO] 训练数据: %s" % len(paths)
+    for path, name in zip(paths, names):
+        name_id = name.split('_')[0]
+        params = (path, name_id, npy_dir)
+        p.apply_async(generate_augment, args=(params,))
+    p.close()
+    p.join()
 
 
-def generate_npy_data_train(tn=40):
-    print "[INFO] 特征提取开始"
+def process_audio_augment():
+    """
+    音频增强
+    """
+    print "[INFO] 特征提取开始! "
+
     npy_folder = os.path.join(ROOT_DIR, 'experiments', 'npy_data')
     mkdir_if_not_exist(npy_folder)
     npy_train = os.path.join(npy_folder, 'train')
@@ -170,51 +209,13 @@ def generate_npy_data_train(tn=40):
     mkdir_if_not_exist(npy_test)
 
     raw_train = os.path.join(ROOT_DIR, 'experiments', 'raw_data', 'train')
-    paths, names = traverse_dir_files(raw_train)
-    p = Pool(processes=tn)  # 进程数尽量与核数匹配
-    print "[INFO] 训练数据: %s" % len(paths)
-    for path, name in zip(paths, names):
-        name_id = name.split('_')[0]
-        params = (path, name_id, npy_train)
-        p.apply_async(generate_augment, args=(params,))
-    p.close()
-    p.join()
-
-    print "[INFO] 特征提取结束"
-
-
-def generate_npy_data_fot_test(tn=40):
-    print "[INFO] 特征提取开始"
-    npy_folder = os.path.join(ROOT_DIR, 'experiments', 'npy_data')
-    mkdir_if_not_exist(npy_folder)
-    npy_train = os.path.join(npy_folder, 'train')
-    npy_test = os.path.join(npy_folder, 'test')
-    mkdir_if_not_exist(npy_train)
-    mkdir_if_not_exist(npy_test)
-
     raw_test = os.path.join(ROOT_DIR, 'experiments', 'raw_data', 'test')
-    paths, names = traverse_dir_files(raw_test)
-    p = Pool(processes=tn)  # 进程数尽量与核数匹配
-    print "[INFO] 测试数据: %s" % len(paths)
-    for path, name in zip(paths, names):
-        name_id = name.split('_')[0]
-        params = (path, name_id, npy_test)
-        p.apply_async(generate_augment, args=(params,))
-    p.close()
-    p.join()
 
-    print "[INFO] 特征提取结束"
+    mp_augment(raw_train, npy_train)
+    mp_augment(raw_test, npy_test)
 
-
-def get_feature(y, sr, dim=256):
-    """
-    提取音频特征
-    """
-    f_ws = len(y) / (dim + 4)  # 使用固定的窗口大小, 1000~1001维
-    features = audioFeatureExtraction.stFeatureExtraction(y, sr, f_ws, f_ws)
-    features = features[1:33][:, :256]  # 定向选择特征
-    return features
+    print "[INFO] 特征提取结束! "
 
 
 if __name__ == '__main__':
-    generate_npy_data_fot_test()
+    process_audio_augment()
