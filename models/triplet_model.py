@@ -12,6 +12,7 @@ from keras.optimizers import Adam
 from keras.utils import plot_model
 
 from bases.model_base import ModelBase
+import tensorflow as tf
 
 
 class TripletModel(ModelBase):
@@ -53,15 +54,19 @@ class TripletModel(ModelBase):
 
         shared_model = self.deep_conv_lstm()  # 共享模型
 
-        anc_out = shared_model(anc_input)
-        pos_out = shared_model(pos_input)
-        neg_out = shared_model(neg_input)
+        with tf.device_scope('/gpu:0'):
+            anc_out = shared_model(anc_input)
+        with tf.device_scope('/gpu:1'):
+            pos_out = shared_model(pos_input)
+        with tf.device_scope('/gpu:2'):
+            neg_out = shared_model(neg_input)
 
         print "[INFO] model - 锚shape: %s" % str(anc_out.get_shape())
         print "[INFO] model - 正shape: %s" % str(pos_out.get_shape())
         print "[INFO] model - 负shape: %s" % str(neg_out.get_shape())
 
-        output = Concatenate()([anc_out, pos_out, neg_out])  # 连接
+        with tf.device_scope('/cpu:0'):
+            output = Concatenate()([anc_out, pos_out, neg_out])  # 连接
         model = Model(inputs=[anc_input, pos_input, neg_input], outputs=output)
 
         plot_model(model, to_file=os.path.join(self.config.img_dir, "triplet_loss_model.png"),
