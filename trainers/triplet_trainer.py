@@ -187,6 +187,7 @@ class TripletTrainer(TrainerBase):
         return np.array(pairs)
 
 
+@DeprecationWarning
 class TlMetric(Callback):
     def on_epoch_end(self, epoch, logs=None):
         print '[INFO] 验证数据shape: %s' % str(self.validation_data[0].shape)
@@ -269,8 +270,6 @@ class TrainValTensorBoard(TensorBoard):
         self.val_writer.flush()
 
         # Pass the remaining logs to `TensorBoard.on_epoch_end`
-        logs = logs or {}
-        logs = {k: v for k, v in logs.items() if not k.startswith('val_')}
         super(TrainValTensorBoard, self).on_epoch_end(epoch, logs)
 
     def on_train_end(self, logs=None):
