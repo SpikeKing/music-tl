@@ -19,7 +19,7 @@ class TripletDL(DataLoaderBase):
         data_path = os.path.join(ROOT_DIR, 'experiments', 'data_train.npz')
         data_all = np.load(data_path)
         self.X_train = data_all['f_list']
-        self.X_train = np.transpose(self.X_train, [0, 2, 1])
+        self.X_train = np.transpose(self.X_train, [0, 2, 1])  # (None, 256, 32)
         self.y_train = data_all['l_list']
         self.y_train = to_categorical(self.y_train)
 
