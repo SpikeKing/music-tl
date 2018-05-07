@@ -7,10 +7,12 @@ import argparse
 import json
 
 import os
+
+import time
 from bunch import Bunch
 
 from root_dir import ROOT_DIR
-from utils import mkdir_if_not_exist
+from utils import mkdir_if_not_exist, time_2_readable
 
 
 def get_config_from_json(json_file):
@@ -39,7 +41,7 @@ def process_config(json_file):
     exp_name = str(config.exp_name)
     print('[INFO] 工程名: %s' % exp_name)
 
-    config.tb_dir = os.path.join(exp_dir, exp_name, "logs/")  # 日志
+    config.tb_dir = os.path.join(exp_dir, exp_name, "logs_%s/" % time_2_readable(time.time(), fs='%Y%m%d%H%M%S'))  # 日志
     config.cp_dir = os.path.join(exp_dir, exp_name, "checkpoints/")  # 模型
     config.img_dir = os.path.join(exp_dir, exp_name, "images/")  # 网络
 

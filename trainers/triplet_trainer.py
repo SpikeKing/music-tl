@@ -8,14 +8,12 @@ import random
 import warnings
 
 import numpy as np
-from keras.callbacks import TensorBoard, ModelCheckpoint, Callback
-from keras.models import load_model
-from keras.utils import to_categorical
+import tensorflow as tf
+from keras.callbacks import TensorBoard, Callback
 from sklearn.exceptions import UndefinedMetricWarning
 from sklearn.metrics import precision_recall_fscore_support
 
 from bases.trainer_base import TrainerBase
-from models.triplet_model import TripletModel
 from root_dir import ROOT_DIR
 from utils.np_utils import prp_2_oh_array
 from utils.utils import mkdir_if_not_exist
@@ -34,15 +32,15 @@ class TripletTrainer(TrainerBase):
     def init_callbacks(self):
         train_dir = os.path.join(ROOT_DIR, self.config.tb_dir, "train")
         mkdir_if_not_exist(train_dir)
-        self.callbacks.append(
-            TensorBoard(
-                log_dir=train_dir,
-                write_images=True,
-                write_graph=True,
-            )
-        )
+        # self.callbacks.append(
+        #     TensorBoard(
+        #         log_dir=train_dir,
+        #         write_images=True,
+        #         write_graph=True,
+        #     )
+        # )
 
-        self.callbacks.append(TlMetric())
+        self.callbacks.append(TrainValTensorBoard(log_dir=train_dir, write_graph=True, write_images=True))
         # self.callbacks.append(FPRMetric())
         # self.callbacks.append(FPRMetricDetail())
 
@@ -152,7 +150,7 @@ class TripletTrainer(TrainerBase):
         print "[INFO] min: %s, max: %s, avg: %s, acc: %0.4f%% (%s / %s)" % (
             res_min, res_max, res_avg, res_acc * 100, r_count, len(basic_loss))
 
-        return '%0.4f' % res_acc
+        return res_min, res_max, res_avg, res_acc
 
     @staticmethod
     def create_pairs(x, digit_indices, num_classes, clz_samples=19):
@@ -204,7 +202,8 @@ class TlMetric(Callback):
         print '[INFO] %s' % str(np.average(self.validation_data[2]))
         y_pred0 = self.model.predict(X_te0)  # 验证模型
 
-        acc_str = TripletTrainer.show_acc_facets(y_pred0[:, :128], y_pred0[:, 128:256], y_pred0[:, 256:])
+        dist_min, dist_max, dist_avg, dist_acc = \
+            TripletTrainer.show_acc_facets(y_pred0[:, :128], y_pred0[:, 128:256], y_pred0[:, 256:])
 
         print "[INFO] 距离数据均值"
         print '[INFO] %s' % str(np.average(y_pred0[:, :128]))
@@ -213,7 +212,70 @@ class TlMetric(Callback):
 
         self.model.save(
             os.path.join(ROOT_DIR, 'experiments/music_tl/checkpoints', "triplet_loss_model_%s_%s.h5" %
-                         (epoch, acc_str)))  # 存储模型
+                         (epoch, '%0.4f' % dist_acc)))  # 存储模型
+
+
+class TrainValTensorBoard(TensorBoard):
+    def __init__(self, log_dir='./logs', **kwargs):
+        # Make the original `TensorBoard` log to a subdirectory 'training'
+        training_log_dir = os.path.join(log_dir, 'training')
+        super(TrainValTensorBoard, self).__init__(training_log_dir, **kwargs)
+
+        # Log the validation metrics to a separate subdirectory
+        self.val_log_dir = os.path.join(log_dir, 'validation')
+
+    def set_model(self, model):
+        # Setup writer for validation metrics
+        self.val_writer = tf.summary.FileWriter(self.val_log_dir)
+        super(TrainValTensorBoard, self).set_model(model)
+
+    def on_epoch_end(self, epoch, logs=None):
+        # Pop the validation logs and handle them separately with
+        # `self.val_writer`. Also rename the keys so that they can
+        # be plotted on the same figure with the training metrics
+
+        print '[INFO] 验证数据shape: %s' % str(self.validation_data[0].shape)
+        X_te0 = {
+            'anc_input': self.validation_data[0],
+            'pos_input': self.validation_data[1],
+            'neg_input': self.validation_data[2]
+        }
+
+        print "[INFO] 验证数据均值"
+        print '[INFO] %s' % str(np.average(self.validation_data[0]))
+        print '[INFO] %s' % str(np.average(self.validation_data[1]))
+        print '[INFO] %s' % str(np.average(self.validation_data[2]))
+        y_pred0 = self.model.predict(X_te0)  # 验证模型
+
+        dist_min, dist_max, dist_avg, dist_acc = \
+            TripletTrainer.show_acc_facets(y_pred0[:, :128], y_pred0[:, 128:256], y_pred0[:, 256:])
+
+        print "[INFO] 距离数据均值"
+        print '[INFO] %s' % str(np.average(y_pred0[:, :128]))
+        print '[INFO] %s' % str(np.average(y_pred0[:, 128:256]))
+        print '[INFO] %s' % str(np.average(y_pred0[:, 256:]))
+
+        self.model.save(
+            os.path.join(ROOT_DIR, 'experiments/music_tl/checkpoints', "triplet_loss_model_%s_%s.h5" %
+                         (epoch, '%0.4f' % dist_acc)))  # 存储模型
+
+        val_logs = {'dist_min': dist_min, 'dist_max': dist_max, 'dist_avg': dist_avg, 'dist_acc': dist_acc}
+        for name, value in val_logs.items():
+            summary = tf.Summary()
+            summary_value = summary.value.add()
+            summary_value.simple_value = value.item()
+            summary_value.tag = name
+            self.val_writer.add_summary(summary, epoch)
+        self.val_writer.flush()
+
+        # Pass the remaining logs to `TensorBoard.on_epoch_end`
+        logs = logs or {}
+        logs = {k: v for k, v in logs.items() if not k.startswith('val_')}
+        super(TrainValTensorBoard, self).on_epoch_end(epoch, logs)
+
+    def on_train_end(self, logs=None):
+        super(TrainValTensorBoard, self).on_train_end(logs)
+        self.val_writer.close()
 
 
 class FPRMetric(Callback):

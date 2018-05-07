@@ -83,7 +83,7 @@ def mp_data_merger(data_dir, out_dir, n_prc=40):
     :return: None
     """
     start_time = datetime.now()  # 起始时间
-    print "[INFO] 当前时间: %s" % timestamp_2_readable(time.time())
+    print "[INFO] 当前时间: %s" % time_2_readable(time.time())
 
     path_list, _ = traverse_dir_files(data_dir)  # 路径列表
     label_dict = get_label_dict(path_list)
@@ -124,7 +124,7 @@ def mp_data_merger(data_dir, out_dir, n_prc=40):
     print "[INFO] 最终数据: %s %s, %s %s, %s %s" % (
         'f_list', res_data['f_list'].shape, 'l_list', res_data['l_list'].shape, 'n_list', res_data['n_list'].shape)
     print "[INFO] 最终特征: %s, %s, %s" % (res_data['f_list'][0], res_data['l_list'][0], res_data['n_list'][0])
-    print "[INFO] 结束时间: %s" % timestamp_2_readable(time.time())
+    print "[INFO] 结束时间: %s" % time_2_readable(time.time())
     elapsed_time = datetime.now() - start_time  # 终止时间
     print "[INFO] 耗时: %s (秒)" % elapsed_time
 
@@ -147,12 +147,12 @@ def merge_data():
     """
     合并数据，npz格式，f_list是特征矩阵，l_list是标签列表，n_list是名称列表
     """
-    train_path = os.path.join(ROOT_DIR, 'experiments', 'npy_data', 'train')
-    train_out = os.path.join(ROOT_DIR, "experiments", "data_train.npz")
-    mp_data_merger(data_dir=train_path, out_dir=train_out)
+    # train_path = os.path.join(ROOT_DIR, 'experiments', 'npy_data', 'train')
+    # train_out = os.path.join(ROOT_DIR, "experiments", "data_train.npz")
+    # mp_data_merger(data_dir=train_path, out_dir=train_out)
 
     test_path = os.path.join(ROOT_DIR, 'experiments', 'npy_data', 'test')
-    test_out = os.path.join(ROOT_DIR, "experiments", "data_test.npz")
+    test_out = os.path.join(ROOT_DIR, "experiments", "data_test_v2.npz")
     mp_data_merger(data_dir=test_path, out_dir=test_out)
 
 

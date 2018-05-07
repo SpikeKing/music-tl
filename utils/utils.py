@@ -33,13 +33,14 @@ def mkdir_if_not_exist(dir_name, is_delete=False):
         return False
 
 
-def timestamp_2_readable(time_stamp):
+def time_2_readable(time_stamp, fs='%Y-%m-%d %H:%M:%S'):
     """
     时间戳转换为可读时间
     :param time_stamp: 时间戳，当前时间：time.time()
+    :param fs: 时间格式
     :return: 可读时间字符串
     """
-    return datetime.fromtimestamp(time_stamp).strftime('%Y-%m-%d %H:%M:%S')
+    return datetime.fromtimestamp(time_stamp).strftime(fs)
 
 
 def traverse_dir_files(root_dir, ext=None):
