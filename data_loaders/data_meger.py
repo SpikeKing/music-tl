@@ -81,7 +81,7 @@ def merge_data(data_path, n_prc=40):
         label = label_dict[clz_name]
         results.append(p.apply_async(func, args=(path, label,)))
         count += 1
-        if count == 19 * 200:
+        if count == 19 * 400:
             break
 
     count = 0
@@ -100,7 +100,7 @@ def merge_data(data_path, n_prc=40):
             print "\t[INFO] count %s" % count
     print "\t[INFO] count %s" % count
 
-    o_path = os.path.join(ROOT_DIR, "experiments", "data_test_200.npz")
+    o_path = os.path.join(ROOT_DIR, "experiments", "data_train_400.npz")
     np.savez(o_path, f_list=f_list, l_list=l_list, n_list=n_list)
     res_data = np.load(o_path)
     print "[INFO] 最终数据: %s %s, %s %s, %s %s" % (
@@ -120,5 +120,5 @@ def check_error_features(features):
 
 
 if __name__ == '__main__':
-    train_path = os.path.join(ROOT_DIR, 'experiments', 'npy_data', 'test')
+    train_path = os.path.join(ROOT_DIR, 'experiments', 'npy_data', 'train')
     merge_data(data_path=train_path)
