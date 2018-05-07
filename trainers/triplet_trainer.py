@@ -92,6 +92,7 @@ class TripletTrainer(TrainerBase):
         te_pairs = self.create_pairs(x_test, test_indices, clz_test)
 
         print('[INFO] te_pairs.shape: %s' % str(te_pairs.shape))
+
         # te_error = np.isnan(te_pairs).sum()
         # print('[INFO] te_pairs 异常数据数: %s' % te_error)
         # if te_error > 0:
@@ -136,11 +137,10 @@ class TripletTrainer(TrainerBase):
             batch_size=self.config.batch_size,
             epochs=self.config.num_epochs,
             validation_data=[X_te, np.ones(len(anc_ins_te))],
-            # validation_data=[[anc_ins_te, pos_ins_te, neg_ins_te], np.ones(len(anc_ins_te))],
             verbose=1,
             callbacks=self.callbacks)
 
-        # self.model.save(os.path.join(self.config.cp_dir, "triplet_loss_model.h5"))  # 存储模型
+        self.model.save(os.path.join(self.config.cp_dir, "triplet_loss_model.h5"))  # 存储模型
 
         y_pred = self.model.predict(X_te)  # 验证模型
         self.show_acc_facets(y_pred, y_pred.shape[0] / clz_test, clz_test)
@@ -149,16 +149,11 @@ class TripletTrainer(TrainerBase):
     def show_acc_facets(anchor, positive, negative):
         """
         展示模型的准确率
-        :param y_pred: 测试结果数据组
-        :param n: 数据长度
-        :param clz_size: 类别数
-        :return: 打印数据
+        :param anchor: 锚输出
+        :param positive: 正输出
+        :param negative: 负输出
+        :return: 准确率
         """
-        # print "[INFO] trainer - clz_size: %s" % clz_size
-        # print "[INFO] trainer - clz %s" % i
-        # final = y_pred
-        # anchor, positive, negative = final[:, 0:128], final[:, 128:256], final[:, 256:]
-
         pos_dist = np.sum(np.square(anchor - positive), axis=-1, keepdims=True)
         neg_dist = np.sum(np.square(anchor - negative), axis=-1, keepdims=True)
         basic_loss = pos_dist - neg_dist
@@ -174,25 +169,27 @@ class TripletTrainer(TrainerBase):
         return '%0.4f' % res_acc
 
     @staticmethod
-    def create_pairs(x, digit_indices, num_classes):
+    def create_pairs(x, digit_indices, num_classes, clz_samples=19):
         """
         创建正例和负例的Pairs
         :param x: 数据
         :param digit_indices: 不同类别的索引列表
         :param num_classes: 类别
+        :param clz_samples: 类别的数量
         :return: Triplet Loss 的 Feed 数据
         """
 
         pairs = []
-        clz_samples = 19
         # n = min([len(digit_indices[d]) for d in range(num_classes)]) - 1  # 最小类别数
         n = clz_samples - 1
+        np.random.seed(47)
         print "[INFO] create_pairs - n: %s, num_classes: %s" % (n, num_classes)
         for d in range(num_classes):
             if len(digit_indices[d]) < clz_samples:
                 print('[INFO] 去除样本类别: %s' % d)
                 continue
             for i in range(n):
+                np.random.shuffle(digit_indices[d])
                 z1, z2 = digit_indices[d][i], digit_indices[d][i + 1]
                 while True:
                     inc = random.randrange(1, num_classes)
@@ -208,25 +205,25 @@ class TripletTrainer(TrainerBase):
 
 class TlMetric(Callback):
     def on_epoch_end(self, epoch, logs=None):
-        print self.validation_data[0].shape
+        print '[INFO] 验证数据shape: %s' % str(self.validation_data[0].shape)
         X_te0 = {
             'anc_input': self.validation_data[0],
             'pos_input': self.validation_data[1],
             'neg_input': self.validation_data[2]
         }
 
-        print "验证数据均值"
-        print np.average(self.validation_data[0])
-        print np.average(self.validation_data[1])
-        print np.average(self.validation_data[2])
+        print "[INFO] 验证数据均值"
+        print '[INFO] %s' % str(np.average(self.validation_data[0]))
+        print '[INFO] %s' % str(np.average(self.validation_data[1]))
+        print '[INFO] %s' % str(np.average(self.validation_data[2]))
         y_pred0 = self.model.predict(X_te0)  # 验证模型
 
         acc_str = TripletTrainer.show_acc_facets(y_pred0[:, :128], y_pred0[:, 128:256], y_pred0[:, 256:])
 
-        print "距离数据均值"
-        print np.average(y_pred0[:, :128])
-        print np.average(y_pred0[:, 128:256])
-        print np.average(y_pred0[:, 256:])
+        print "[INFO] 距离数据均值"
+        print '[INFO] %s' % str(np.average(y_pred0[:, :128]))
+        print '[INFO] %s' % str(np.average(y_pred0[:, 128:256]))
+        print '[INFO] %s' % str(np.average(y_pred0[:, 256:]))
 
         self.model.save(
             os.path.join(ROOT_DIR, 'experiments/music_tl/checkpoints', "triplet_loss_model_%s_%s.h5" %

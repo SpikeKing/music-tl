@@ -66,7 +66,8 @@ class TripletModel(ModelBase):
         print "[INFO] neg_out - 负shape: %s" % str(neg_out.get_shape())
 
         with tf.device('/cpu:0'):
-            output = Concatenate()([anc_out, pos_out, neg_out])  # 连接
+            output = Concatenate()([anc_out, pos_out, neg_out])  # 输出连接
+
         model = Model(inputs=[anc_input, pos_input, neg_input], outputs=output)
 
         plot_model(model, to_file=os.path.join(self.config.img_dir, "triplet_loss_model.png"),
@@ -104,9 +105,7 @@ class TripletModel(ModelBase):
             sub_model = BatchNormalization()(sub_model)
             sub_model = MaxPooling1D(pool_size=pool_size)(sub_model)
             sub_model = LSTM(128, return_sequences=True)(sub_model)
-            sub_model = BatchNormalization()(sub_model)
             sub_model = LSTM(128, return_sequences=True)(sub_model)
-            sub_model = BatchNormalization()(sub_model)
             sub_model = LSTM(128)(sub_model)
             main_output = Dropout(dropout_rate)(sub_model)
 
