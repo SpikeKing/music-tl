@@ -54,18 +54,18 @@ class TripletModel(ModelBase):
 
         shared_model = self.deep_conv_lstm()  # 共享模型
 
-        with tf.device_scope('/gpu:0'):
+        with tf.device('/gpu:0'):
             anc_out = shared_model(anc_input)
-        with tf.device_scope('/gpu:1'):
+        with tf.device('/gpu:1'):
             pos_out = shared_model(pos_input)
-        with tf.device_scope('/gpu:2'):
+        with tf.device('/gpu:2'):
             neg_out = shared_model(neg_input)
 
         print "[INFO] model - 锚shape: %s" % str(anc_out.get_shape())
         print "[INFO] model - 正shape: %s" % str(pos_out.get_shape())
         print "[INFO] model - 负shape: %s" % str(neg_out.get_shape())
 
-        with tf.device_scope('/cpu:0'):
+        with tf.device('/cpu:0'):
             output = Concatenate()([anc_out, pos_out, neg_out])  # 连接
         model = Model(inputs=[anc_input, pos_input, neg_input], outputs=output)
 
