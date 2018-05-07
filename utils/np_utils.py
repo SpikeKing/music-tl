@@ -21,3 +21,16 @@ def prp_2_oh_array(arr):
     arr_max = np.argmax(arr, axis=1)  # 最大值位置
     oh_arr = np.eye(arr_size)[arr_max]  # OH矩阵
     return oh_arr
+
+
+def is_same_line(td_arr):
+    """
+    判断是否行值全相等
+    :param td_arr: 二维矩阵
+    :return: True含有值相等的行
+    """
+    row_max = np.max(td_arr, axis=1)
+    row_min = np.min(td_arr, axis=1)
+
+    same_row = (row_max == row_min)
+    return np.any(same_row)

@@ -5,10 +5,9 @@ Copyright (c) 2018. All rights reserved.
 Created by C. L. Wang on 2018/5/3
 """
 import collections
-import numpy as np
-import time
-import sys
 import os
+import sys
+import time
 
 p = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if p not in sys.path:
@@ -17,6 +16,7 @@ if p not in sys.path:
 from multiprocessing import Pool
 from root_dir import ROOT_DIR
 from utils.utils import *
+from utils.np_utils import *
 
 
 def get_path_clz(path):
@@ -89,7 +89,7 @@ def merge_data(data_path, n_prc=40):
     print len(results)
     for i in results:
         features, label, name = i.get()
-        if not name or label == -1 or np.isnan(features).sum() > 0:
+        if not name or label == -1 or check_error_features(features):
             print "[INFO] 错误数据"
             continue
         f_list.append(features)
@@ -109,6 +109,14 @@ def merge_data(data_path, n_prc=40):
     print "[INFO] 结束时间: %s" % timestamp_2_readable(time.time())
     elapsed_time = datetime.now() - start_time  # 终止时间
     print "[INFO] 耗时: %s (秒)" % elapsed_time
+
+
+def check_error_features(features):
+    if np.isnan(features).sum() > 0:
+        return True
+    elif is_same_line(features):
+        return True
+    return False
 
 
 if __name__ == '__main__':

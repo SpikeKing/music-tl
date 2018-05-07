@@ -104,6 +104,9 @@ class TripletTrainer(TrainerBase):
         print "[INFO] anc_ins: %s" % str(anc_ins.shape)
         print "[INFO] pos_ins: %s" % str(pos_ins.shape)
         print "[INFO] neg_ins: %s" % str(neg_ins.shape)
+        print "[INFO] anc_ins - avg: %s" % np.average(anc_ins)
+        print "[INFO] pos_ins - avg: %s" % np.average(pos_ins)
+        print "[INFO] neg_ins - avg: %s" % np.average(neg_ins)
 
         X = {
             'anc_input': anc_ins,
@@ -124,23 +127,26 @@ class TripletTrainer(TrainerBase):
         print "[INFO] anc_ins_te: %s" % str(anc_ins_te.shape)
         print "[INFO] pos_ins_te: %s" % str(pos_ins_te.shape)
         print "[INFO] neg_ins_te: %s" % str(neg_ins_te.shape)
+        print "[INFO] anc_ins_te - avg: %s" % np.average(anc_ins_te)
+        print "[INFO] pos_ins_te - avg: %s" % np.average(pos_ins_te)
+        print "[INFO] neg_ins_te - avg: %s" % np.average(neg_ins_te)
 
         self.model.fit(
             X, np.ones(len(anc_ins)),
             batch_size=self.config.batch_size,
             epochs=self.config.num_epochs,
-            # validation_data=[X_te, np.ones(len(anc_ins_te))],
             validation_data=[X_te, np.ones(len(anc_ins_te))],
+            # validation_data=[[anc_ins_te, pos_ins_te, neg_ins_te], np.ones(len(anc_ins_te))],
             verbose=1,
             callbacks=self.callbacks)
 
-        self.model.save(os.path.join(self.config.cp_dir, "triplet_loss_model.h5"))  # 存储模型
+        # self.model.save(os.path.join(self.config.cp_dir, "triplet_loss_model.h5"))  # 存储模型
 
         y_pred = self.model.predict(X_te)  # 验证模型
         self.show_acc_facets(y_pred, y_pred.shape[0] / clz_test, clz_test)
 
     @staticmethod
-    def show_acc_facets(anchor, positive, negative, clz_size):
+    def show_acc_facets(anchor, positive, negative):
         """
         展示模型的准确率
         :param y_pred: 测试结果数据组
@@ -148,7 +154,7 @@ class TripletTrainer(TrainerBase):
         :param clz_size: 类别数
         :return: 打印数据
         """
-        print "[INFO] trainer - clz_size: %s" % clz_size
+        # print "[INFO] trainer - clz_size: %s" % clz_size
         # print "[INFO] trainer - clz %s" % i
         # final = y_pred
         # anchor, positive, negative = final[:, 0:128], final[:, 128:256], final[:, 256:]
@@ -201,31 +207,30 @@ class TripletTrainer(TrainerBase):
 
 
 class TlMetric(Callback):
-    def on_epoch_end(self, batch, logs=None):
+    def on_epoch_end(self, epoch, logs=None):
+        print self.validation_data[0].shape
         X_te0 = {
-            'anc_input': self.validation_data[0][:10],
-            'pos_input': self.validation_data[1][:10],
-            'neg_input': self.validation_data[2][:10]
+            'anc_input': self.validation_data[0],
+            'pos_input': self.validation_data[1],
+            'neg_input': self.validation_data[2]
         }
+
+        print "验证数据均值"
+        print np.average(self.validation_data[0])
+        print np.average(self.validation_data[1])
+        print np.average(self.validation_data[2])
         y_pred0 = self.model.predict(X_te0)  # 验证模型
-        # X_te1 = {
-        #     'anc_input': self.validation_data[1],
-        #     'pos_input': self.validation_data[1],
-        #     'neg_input': self.validation_data[1]
-        # }
-        # y_pred1 = self.model.predict(X_te1)  # 验证模型
-        # X_te2 = {
-        #     'anc_input': self.validation_data[2],
-        #     'pos_input': self.validation_data[2],
-        #     'neg_input': self.validation_data[2]
-        # }
-        # y_pred2 = self.model.predict(X_te2)  # 验证模型
-        clz_test = len(self.validation_data[0]) / 18
 
-        acc_str = TripletTrainer.show_acc_facets(
-            y_pred0[:, :128], y_pred0[:, :128], y_pred0[:, :128], clz_test)
+        acc_str = TripletTrainer.show_acc_facets(y_pred0[:, :128], y_pred0[:, 128:256], y_pred0[:, 256:])
 
-        self.model.save(os.path.join(ROOT_DIR, 'experiments/music_tl/checkpoints', "triplet_loss_model_%s.h5" % acc_str))  # 存储模型
+        print "距离数据均值"
+        print np.average(y_pred0[:, :128])
+        print np.average(y_pred0[:, 128:256])
+        print np.average(y_pred0[:, 256:])
+
+        self.model.save(
+            os.path.join(ROOT_DIR, 'experiments/music_tl/checkpoints', "triplet_loss_model_%s_%s.h5" %
+                         (epoch, acc_str)))  # 存储模型
 
 
 class FPRMetric(Callback):

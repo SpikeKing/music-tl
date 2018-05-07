@@ -16,7 +16,7 @@ class TripletDL(DataLoaderBase):
     def __init__(self, config=None):
         super(TripletDL, self).__init__(config)
 
-        data_path = os.path.join(ROOT_DIR, 'experiments', 'data_train_100.npz')
+        data_path = os.path.join(ROOT_DIR, 'experiments', 'data_train.npz')
         data_all = np.load(data_path)
         self.X_train = data_all['f_list']
         self.X_train = np.transpose(self.X_train, [0, 2, 1])
