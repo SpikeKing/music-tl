@@ -45,7 +45,7 @@ def process_config(json_file):
     config.cp_dir = os.path.join(exp_dir, exp_name, "checkpoints/")  # 模型
     config.img_dir = os.path.join(exp_dir, exp_name, "images/")  # 网络
 
-    mkdir_if_not_exist(config.tb_dir)  # 创建文件夹
+    mkdir_if_not_exist(str(config.tb_dir))  # 创建文件夹
     mkdir_if_not_exist(config.cp_dir)  # 创建文件夹
     mkdir_if_not_exist(config.img_dir)  # 创建文件夹
     return config
