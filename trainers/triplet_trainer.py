@@ -98,9 +98,8 @@ class TripletTrainer(TrainerBase):
         # if te_error > 0:
         #     raise Exception('[Exception] Nan数据错误!!!')
 
-        anc_ins = tr_pairs[:, 0]
-        pos_ins = tr_pairs[:, 1]
-        neg_ins = tr_pairs[:, 2]
+        anc_ins, pos_ins, neg_ins = tr_pairs[:, 0], tr_pairs[:, 1], tr_pairs[:, 2]
+        X = {'anc_input': anc_ins, 'pos_input': pos_ins, 'neg_input': neg_ins}
 
         print "[INFO] anc_ins: %s" % str(anc_ins.shape)
         print "[INFO] pos_ins: %s" % str(pos_ins.shape)
@@ -109,21 +108,8 @@ class TripletTrainer(TrainerBase):
         print "[INFO] pos_ins - avg: %s" % np.average(pos_ins)
         print "[INFO] neg_ins - avg: %s" % np.average(neg_ins)
 
-        X = {
-            'anc_input': anc_ins,
-            'pos_input': pos_ins,
-            'neg_input': neg_ins
-        }
-
-        anc_ins_te = te_pairs[:, 0]
-        pos_ins_te = te_pairs[:, 1]
-        neg_ins_te = te_pairs[:, 2]
-
-        X_te = {
-            'anc_input': anc_ins_te,
-            'pos_input': pos_ins_te,
-            'neg_input': neg_ins_te
-        }
+        anc_ins_te, pos_ins_te, neg_ins_te = te_pairs[:, 0], te_pairs[:, 1], te_pairs[:, 2]
+        X_te = {'anc_input': anc_ins_te, 'pos_input': pos_ins_te, 'neg_input': neg_ins_te}
 
         print "[INFO] anc_ins_te: %s" % str(anc_ins_te.shape)
         print "[INFO] pos_ins_te: %s" % str(pos_ins_te.shape)
