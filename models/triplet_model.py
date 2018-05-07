@@ -4,6 +4,7 @@ Copyright (c) 2018. All rights reserved.
 Created by C. L. Wang on 2018/4/18
 """
 import os
+import tensorflow as tf
 
 from keras import Input, Model
 from keras.layers import Dense, Conv2D, MaxPooling2D, Dropout, Flatten, K, Concatenate, Conv1D, \
@@ -12,7 +13,6 @@ from keras.optimizers import Adam
 from keras.utils import plot_model
 
 from bases.model_base import ModelBase
-import tensorflow as tf
 
 
 class TripletModel(ModelBase):
