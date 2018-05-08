@@ -26,7 +26,7 @@ class DistanceApi(object):
 
     @staticmethod
     def load_data():
-        file_name = 'data_test_200.bin.npz'
+        file_name = 'data_test.bin.npz'
         data_path = os.path.join(ROOT_DIR, 'experiments', file_name)
         data_all = np.load(data_path)
         b_list = data_all['b_list'].astype(np.int64)
