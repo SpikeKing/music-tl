@@ -65,8 +65,6 @@ class TripletTrainer(TrainerBase):
         # 测试不使用全量数据
         x_test = self.data[1][0]
         y_test = np.argmax(self.data[1][1], axis=1)
-        x_test = x_test[:19 * 1000]
-        y_test = y_test[:19 * 1000]
 
         self.train_core(x_train, y_train, x_test, y_test)
 
@@ -92,7 +90,7 @@ class TripletTrainer(TrainerBase):
               % (str(x_test.shape), str(y_test.shape))
         test_indices = [np.where(y_test == i)[0] for i in sorted(np.unique(y_test))]
         print "[INFO] 测试 - 类别数: %s" % test_indices[0]
-        te_pairs = self.create_pairs(x_test, test_indices, clz_test, n_loop=1)
+        te_pairs = self.create_pairs(x_test, test_indices, clz_test)
 
         print('[INFO] te_pairs.shape: %s' % str(te_pairs.shape))
 
@@ -158,7 +156,7 @@ class TripletTrainer(TrainerBase):
         return res_min, res_max, res_avg, res_acc
 
     @staticmethod
-    def create_pairs(x, digit_indices, num_classes, clz_samples=19, n_loop=2):
+    def create_pairs(x, digit_indices, num_classes, clz_samples=19, n_loop=1):
         """
         创建正例和负例的Pairs
         :param x: 数据
