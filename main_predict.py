@@ -7,6 +7,7 @@ Created by C. L. Wang on 2018/5/8
 import argparse
 
 import sys
+import numpy as np
 
 from hash.distance_api import DistanceApi
 
@@ -28,6 +29,7 @@ def main_predict():
     print('[INFO] 目标音频: %s' % audio_name)
     da = DistanceApi()
     rb_list, rn_list = da.distance(audio_name)
+    rn_list = [x.replace('.npy', '') for x in list(np.squeeze(rn_list))]
     print('[INFO] 距离: %s' % rb_list)
     print('[INFO] 相似: %s' % rn_list)
 
