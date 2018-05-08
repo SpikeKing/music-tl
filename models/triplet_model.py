@@ -29,7 +29,7 @@ class TripletModel(ModelBase):
         self.model = self.triplet_loss_model()
 
     @staticmethod
-    def triplet_loss_v2(y_true, y_pred):
+    def triplet_loss(y_true, y_pred):
         """
         Triplet Loss的损失函数
         """
@@ -47,7 +47,7 @@ class TripletModel(ModelBase):
         return loss
 
     @staticmethod
-    def triplet_loss(y_true, y_pred, N=512, beta=512, epsilon=1e-8):
+    def triplet_loss_v2(y_true, y_pred, N=512, beta=512, epsilon=1e-8):
         """
         Implementation of the triplet loss function
 
