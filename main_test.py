@@ -33,7 +33,7 @@ def main_test():
 
     print '[INFO] 预测数据...'
     infer = TripletInfer(config=config)
-    # infer.default_dist()
+    infer.default_dist()
     infer.test_dist()
 
     print '[INFO] 预测完成...'
