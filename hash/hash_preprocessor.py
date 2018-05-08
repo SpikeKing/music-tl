@@ -6,9 +6,8 @@ Created by C. L. Wang on 2018/5/8
 """
 import os
 import sys
-import numpy as np
 
-from keras.layers import K
+import numpy as np
 from keras.models import load_model
 
 p = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -16,6 +15,7 @@ if p not in sys.path:
     sys.path.append(p)
 
 from root_dir import ROOT_DIR
+from models.triplet_model import TripletModel
 
 
 class HashPreProcessor(object):
@@ -25,7 +25,7 @@ class HashPreProcessor(object):
     def process(self):
         print('[INFO] 转换开始')
         model_path = os.path.join(ROOT_DIR, "experiments/music_tl/checkpoints", "triplet_loss_model_91_0.9989.h5")
-        model = load_model(model_path, custom_objects={'triplet_loss': self.triplet_loss})
+        model = load_model(model_path, custom_objects={'triplet_loss': TripletModel.triplet_loss})
 
         file_name = 'data_test.npz'
         data_path = os.path.join(ROOT_DIR, 'experiments', file_name)
@@ -68,24 +68,6 @@ class HashPreProcessor(object):
 
         print('[INFO] 输出示例: %s %s %s' % (str(oz_bin.shape), bin(oz_bin[0]), oz_bin[0]))
         print('[INFO] 转换结束')
-
-    @staticmethod
-    def triplet_loss(y_true, y_pred):
-        """
-        Triplet Loss的损失函数
-        """
-        O_DIM = 512
-        anc, pos, neg = y_pred[:, 0:O_DIM], y_pred[:, O_DIM:O_DIM * 2], y_pred[:, O_DIM * 2:]
-
-        # 欧式距离
-        pos_dist = K.sum(K.square(anc - pos), axis=-1, keepdims=True)
-        neg_dist = K.sum(K.square(anc - neg), axis=-1, keepdims=True)
-        basic_loss = pos_dist - neg_dist + 10.0
-
-        loss = K.maximum(basic_loss, 0.0)
-
-        print "[INFO] model - triplet_loss shape: %s" % str(loss.shape)
-        return loss
 
     @staticmethod
     def to_binary(bit_list):

@@ -61,8 +61,10 @@ class TripletTrainer(TrainerBase):
     def train(self):
         x_train = self.data[0][0]
         y_train = np.argmax(self.data[0][1], axis=1)
-        x_test = self.data[1][0]
-        y_test = np.argmax(self.data[1][1], axis=1)
+
+        # 测试不使用全量数据
+        x_test = self.data[1][0][19 * 1000]
+        y_test = np.argmax(self.data[1][1], axis=1)[19 * 1000]
 
         self.train_core(x_train, y_train, x_test, y_test)
 
@@ -88,7 +90,7 @@ class TripletTrainer(TrainerBase):
               % (str(x_test.shape), str(y_test.shape))
         test_indices = [np.where(y_test == i)[0] for i in sorted(np.unique(y_test))]
         print "[INFO] 测试 - 类别数: %s" % test_indices[0]
-        te_pairs = self.create_pairs(x_test, test_indices, clz_test)
+        te_pairs = self.create_pairs(x_test, test_indices, clz_test, n_loop=1)
 
         print('[INFO] te_pairs.shape: %s' % str(te_pairs.shape))
 
@@ -154,13 +156,14 @@ class TripletTrainer(TrainerBase):
         return res_min, res_max, res_avg, res_acc
 
     @staticmethod
-    def create_pairs(x, digit_indices, num_classes, clz_samples=19):
+    def create_pairs(x, digit_indices, num_classes, clz_samples=19, n_loop=2):
         """
         创建正例和负例的Pairs
         :param x: 数据
         :param digit_indices: 不同类别的索引列表
         :param num_classes: 类别
         :param clz_samples: 类别的数量
+        :param n_loop: 循环次数
         :return: Triplet Loss 的 Feed 数据
         """
 
@@ -172,32 +175,21 @@ class TripletTrainer(TrainerBase):
             if len(digit_indices[d]) < clz_samples:
                 print('[INFO] 去除样本类别: %s' % d)
                 continue
-            for i in range(n):
-                np.random.seed(47)
-                np.random.shuffle(digit_indices[d])
-                z1, z2 = digit_indices[d][i], digit_indices[d][i + 1]
-                while True:
-                    inc = random.randrange(1, num_classes)
-                    dn = (d + inc) % num_classes
-                    if len(digit_indices[dn]) >= clz_samples:
-                        break
-                    # else:
-                    #     print('[INFO] 去除样本类别: %s' % dn)
-                z3 = digit_indices[dn][i]
-                pairs += [[x[z1], x[z2], x[z3]]]
-            for i in range(n):  # 再生成一组
-                np.random.seed(17)
-                np.random.shuffle(digit_indices[d])
-                z1, z2 = digit_indices[d][i], digit_indices[d][i + 1]
-                while True:
-                    inc = random.randrange(1, num_classes)
-                    dn = (d + inc) % num_classes
-                    if len(digit_indices[dn]) >= clz_samples:
-                        break
-                    # else:
-                    #     print('[INFO] 去除样本类别: %s' % dn)
-                z3 = digit_indices[dn][i]
-                pairs += [[x[z1], x[z2], x[z3]]]
+            for n_i in range(n_loop):  # 多次循环，多组数据
+                np.random.seed(17 * (n_i + 1))
+                for i in range(n):
+                    np.random.shuffle(digit_indices[d])
+                    z1, z2 = digit_indices[d][i], digit_indices[d][i + 1]
+                    while True:
+                        inc = random.randrange(1, num_classes)
+                        dn = (d + inc) % num_classes
+                        if len(digit_indices[dn]) >= clz_samples:
+                            break
+                        # else:
+                        #     print('[INFO] 去除样本类别: %s' % dn)
+                    z3 = digit_indices[dn][i]
+                    pairs += [[x[z1], x[z2], x[z3]]]
+
         return np.array(pairs)
 
 

@@ -29,7 +29,7 @@ class TripletModel(ModelBase):
         self.model = self.triplet_loss_model()
 
     @staticmethod
-    def triplet_loss(y_true, y_pred):
+    def triplet_loss_v2(y_true, y_pred):
         """
         Triplet Loss的损失函数
         """
@@ -44,6 +44,49 @@ class TripletModel(ModelBase):
         loss = K.maximum(basic_loss, 0.0)
 
         print "[INFO] model - triplet_loss shape: %s" % str(loss.shape)
+        return loss
+
+    @staticmethod
+    def triplet_loss(y_true, y_pred, N=512, beta=512, epsilon=1e-8):
+        """
+        Implementation of the triplet loss function
+
+        Arguments:
+        y_true -- true labels, required when you define a loss in Keras, you don't need it in this function.
+        y_pred -- python list containing three objects:
+                anchor -- the encodings for the anchor data
+                positive -- the encodings for the positive data (similar to anchor)
+                negative -- the encodings for the negative data (different from anchor)
+        N  --  The number of dimension
+        beta -- The scaling factor, N is recommended
+        epsilon -- The Epsilon value to prevent ln(0)
+
+
+        Returns:
+        loss -- real number, value of the loss
+        """
+        anc, pos, neg = y_pred[:, 0:N], y_pred[:, N:N * 2], y_pred[:, N * 2:]
+
+        # 欧式距离
+        pos_dist = K.sum(K.square(anc - pos), axis=-1, keepdims=True)
+        neg_dist = K.sum(K.square(anc - neg), axis=-1, keepdims=True)
+        # basic_loss = pos_dist - neg_dist + TripletModel.MARGIN
+        # anchor = tf.convert_to_tensor(y_pred[:, 0:N])
+        # positive = tf.convert_to_tensor(y_pred[:, N:N * 2])
+        # negative = tf.convert_to_tensor(y_pred[:, N * 2:N * 3])
+        # distance between the anchor and the positive
+        # pos_dist = tf.reduce_sum(tf.square(tf.subtract(anchor, positive)), 1)
+        # distance between the anchor and the negative
+        # neg_dist = tf.reduce_sum(tf.square(tf.subtract(anchor, negative)), 1)
+        # Non Linear Values
+
+        # -ln(-x/N+1)
+        pos_dist = -K.log(-(pos_dist / beta) + 1 + epsilon)
+        neg_dist = -K.log(-((N - neg_dist) / beta) + 1 + epsilon)
+
+        # compute loss
+        loss = neg_dist + pos_dist
+
         return loss
 
     def triplet_loss_model(self):
