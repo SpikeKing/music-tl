@@ -33,17 +33,21 @@ class TripletInfer(InferBase):
         return self.model.predict(data)
 
     def test_dist(self):
-        model_path = os.path.join(self.config.cp_dir, "triplet_loss_model.h5")
+        model_path = os.path.join(self.config.cp_dir, "triplet_loss_model_91_0.9989.h5")
 
         model = load_model(model_path, custom_objects={'triplet_loss': TripletModel.triplet_loss})
         model.summary()
 
-        (_, _), (X_test, y_test) = mnist.load_data()
-        anchor = np.reshape(X_test, (-1, 28, 28, 1))
+        data_path = os.path.join(ROOT_DIR, 'experiments', 'data_test_200.npz')
+        data_all = np.load(data_path)
+        X_test = data_all['f_list']
+        y_test = data_all['l_list']
+        X_test = np.transpose(X_test, [0, 2, 1])
+
         X = {
-            'anc_input': anchor,
-            'pos_input': np.zeros(anchor.shape),
-            'neg_input': np.zeros(anchor.shape)
+            'anc_input': X_test,
+            'pos_input': np.zeros(X_test.shape),
+            'neg_input': np.zeros(X_test.shape)
         }
         start_time = datetime.now()  # 起始时间
         res = model.predict(X)
@@ -57,8 +61,12 @@ class TripletInfer(InferBase):
         self.tb_projector(data, y_test, log_dir)
 
     def default_dist(self):
-        (_, _), (X_test, y_test) = mnist.load_data()
-        X_test = np.reshape(X_test, (-1, 28 * 28))
+        data_path = os.path.join(ROOT_DIR, 'experiments', 'data_test_200.npz')
+        data_all = np.load(data_path)
+        X_test = data_all['f_list']
+        y_test = data_all['l_list']
+
+        X_test = np.reshape(X_test, (-1, 256 * 32))
         log_dir = os.path.join(ROOT_DIR, self.config.tb_dir, 'default')
         mkdir_if_not_exist(log_dir)
         self.tb_projector(X_test, y_test, log_dir)

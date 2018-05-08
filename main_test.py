@@ -18,22 +18,22 @@ def main_test():
     print '[INFO] 解析配置...'
     parser = None
     config = None
-
-    try:
-        args, parser = get_test_args()
-        config = process_config(args.config)
-    except Exception as e:
-        print '[Exception] 配置无效, %s' % e
-        if parser:
-            parser.print_help()
-        print '[Exception] 参考: python main_test.py -c configs/triplet_config.json'
-        exit(0)
-    # config = process_config('configs/triplet_config.json')
+    #
+    # try:
+    #     args, parser = get_test_args()
+    #     config = process_config(args.config)
+    # except Exception as e:
+    #     print '[Exception] 配置无效, %s' % e
+    #     if parser:
+    #         parser.print_help()
+    #     print '[Exception] 参考: python main_test.py -c configs/triplet_config.json'
+    #     exit(0)
+    config = process_config('configs/triplet_config.json')
     print '[INFO] 加载数据...'
 
     print '[INFO] 预测数据...'
     infer = TripletInfer(config=config)
-    infer.default_dist()
+    # infer.default_dist()
     infer.test_dist()
 
     print '[INFO] 预测完成...'
