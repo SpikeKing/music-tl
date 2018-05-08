@@ -27,7 +27,7 @@ class HashPreProcessor(object):
         model_path = os.path.join(ROOT_DIR, "experiments/music_tl/checkpoints", "triplet_loss_model_91_0.9989.h5")
         model = load_model(model_path, custom_objects={'triplet_loss': self.triplet_loss})
 
-        file_name = 'data_test_200.npz'
+        file_name = 'data_test.npz'
         data_path = os.path.join(ROOT_DIR, 'experiments', file_name)
         data_all = np.load(data_path)
         X_test = data_all['f_list']
