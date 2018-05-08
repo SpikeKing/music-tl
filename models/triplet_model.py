@@ -33,7 +33,8 @@ class TripletModel(ModelBase):
         """
         Triplet Loss的损失函数
         """
-        anc, pos, neg = y_pred[:, 0:128], y_pred[:, 128:256], y_pred[:, 256:]
+        O_DIM = 512
+        anc, pos, neg = y_pred[:, 0:O_DIM], y_pred[:, O_DIM:O_DIM * 2], y_pred[:, O_DIM * 2:]
 
         # 欧式距离
         pos_dist = K.sum(K.square(anc - pos), axis=-1, keepdims=True)
@@ -104,9 +105,9 @@ class TripletModel(ModelBase):
             sub_model = Conv1D(64, kernel_size, activation=f_act, padding='same')(sub_model)
             sub_model = BatchNormalization()(sub_model)
             sub_model = MaxPooling1D(pool_size=pool_size)(sub_model)
-            sub_model = LSTM(128, return_sequences=True)(sub_model)
-            sub_model = LSTM(128, return_sequences=True)(sub_model)
-            sub_model = LSTM(128)(sub_model)
+            sub_model = LSTM(512, return_sequences=True)(sub_model)
+            sub_model = LSTM(512, return_sequences=True)(sub_model)
+            sub_model = LSTM(512)(sub_model)
             main_output = Dropout(dropout_rate)(sub_model)
 
             return main_output

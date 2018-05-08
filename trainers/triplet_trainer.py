@@ -20,6 +20,7 @@ from utils.utils import mkdir_if_not_exist
 
 
 class TripletTrainer(TrainerBase):
+
     def __init__(self, model, data, config):
         super(TripletTrainer, self).__init__(model, data, config)
         self.callbacks = []
@@ -166,13 +167,26 @@ class TripletTrainer(TrainerBase):
         pairs = []
         # n = min([len(digit_indices[d]) for d in range(num_classes)]) - 1  # 最小类别数
         n = clz_samples - 1
-        np.random.seed(47)
         print "[INFO] create_pairs - n: %s, num_classes: %s" % (n, num_classes)
         for d in range(num_classes):
             if len(digit_indices[d]) < clz_samples:
                 print('[INFO] 去除样本类别: %s' % d)
                 continue
             for i in range(n):
+                np.random.seed(47)
+                np.random.shuffle(digit_indices[d])
+                z1, z2 = digit_indices[d][i], digit_indices[d][i + 1]
+                while True:
+                    inc = random.randrange(1, num_classes)
+                    dn = (d + inc) % num_classes
+                    if len(digit_indices[dn]) >= clz_samples:
+                        break
+                    # else:
+                    #     print('[INFO] 去除样本类别: %s' % dn)
+                z3 = digit_indices[dn][i]
+                pairs += [[x[z1], x[z2], x[z3]]]
+            for i in range(n):  # 再生成一组
+                np.random.seed(17)
                 np.random.shuffle(digit_indices[d])
                 z1, z2 = digit_indices[d][i], digit_indices[d][i + 1]
                 while True:
@@ -203,13 +217,15 @@ class TlMetric(Callback):
         print '[INFO] %s' % str(np.average(self.validation_data[2]))
         y_pred0 = self.model.predict(X_te0)  # 验证模型
 
+        O_DIM = 512  # 输出256维
+
         dist_min, dist_max, dist_avg, dist_acc = \
-            TripletTrainer.show_acc_facets(y_pred0[:, :128], y_pred0[:, 128:256], y_pred0[:, 256:])
+            TripletTrainer.show_acc_facets(y_pred0[:, :O_DIM], y_pred0[:, O_DIM:O_DIM * 2], y_pred0[:, O_DIM * 2:])
 
         print "[INFO] 距离数据均值"
-        print '[INFO] %s' % str(np.average(y_pred0[:, :128]))
-        print '[INFO] %s' % str(np.average(y_pred0[:, 128:256]))
-        print '[INFO] %s' % str(np.average(y_pred0[:, 256:]))
+        print '[INFO] %s' % str(np.average(y_pred0[:, :O_DIM]))
+        print '[INFO] %s' % str(np.average(y_pred0[:, O_DIM:O_DIM * 2]))
+        print '[INFO] %s' % str(np.average(y_pred0[:, O_DIM * 2:]))
 
         self.model.save(
             os.path.join(ROOT_DIR, 'experiments/music_tl/checkpoints', "triplet_loss_model_%s_%s.h5" %
@@ -248,13 +264,15 @@ class TrainValTensorBoard(TensorBoard):
         print '[INFO] %s' % str(np.average(self.validation_data[2]))
         y_pred0 = self.model.predict(X_te0)  # 验证模型
 
+        O_DIM = 512  # 输出256维
+
         dist_min, dist_max, dist_avg, dist_acc = \
-            TripletTrainer.show_acc_facets(y_pred0[:, :128], y_pred0[:, 128:256], y_pred0[:, 256:])
+            TripletTrainer.show_acc_facets(y_pred0[:, :O_DIM], y_pred0[:, O_DIM:O_DIM * 2], y_pred0[:, O_DIM * 2:])
 
         print "[INFO] 距离数据均值"
-        print '[INFO] %s' % str(np.average(y_pred0[:, :128]))
-        print '[INFO] %s' % str(np.average(y_pred0[:, 128:256]))
-        print '[INFO] %s' % str(np.average(y_pred0[:, 256:]))
+        print '[INFO] %s' % str(np.average(y_pred0[:, :O_DIM]))
+        print '[INFO] %s' % str(np.average(y_pred0[:, O_DIM:O_DIM * 2]))
+        print '[INFO] %s' % str(np.average(y_pred0[:, O_DIM * 2:]))
 
         self.model.save(
             os.path.join(ROOT_DIR, 'experiments/music_tl/checkpoints', "triplet_loss_model_%s_%s.h5" %

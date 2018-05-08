@@ -54,7 +54,9 @@ class TripletInfer(InferBase):
         elapsed_time = (datetime.now() - start_time).total_seconds()
         tps = float(len(y_test)) / float(elapsed_time)
         print "Num: %s, Time: %s, TPS: %s (%s ms)" % (len(y_test), elapsed_time, tps, (1 / tps * 1000))
-        data = res[:, :128]
+
+        O_DIM = 512
+        data = res[:, :O_DIM]
         print "验证结果结构: %s" % str(data.shape)
         log_dir = os.path.join(ROOT_DIR, self.config.tb_dir, "test")
         mkdir_if_not_exist(log_dir)

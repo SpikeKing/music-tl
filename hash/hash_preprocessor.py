@@ -57,7 +57,8 @@ class HashPreProcessor(object):
             'neg_input': np.zeros(X_test.shape)
         }
         res = model.predict(X)
-        data = res[:, :128]
+        O_DIM = 512
+        data = res[:, :O_DIM]
         oz_arr = np.where(data >= 0.0, 1.0, 0.0).astype(int)
         # print np.sum(oz_arr, axis=1)  # 测试分布
         oz_bin = np.apply_along_axis(self.to_binary, axis=1, arr=oz_arr)
@@ -73,7 +74,8 @@ class HashPreProcessor(object):
         """
         Triplet Loss的损失函数
         """
-        anc, pos, neg = y_pred[:, 0:128], y_pred[:, 128:256], y_pred[:, 256:]
+        O_DIM = 512
+        anc, pos, neg = y_pred[:, 0:O_DIM], y_pred[:, O_DIM:O_DIM * 2], y_pred[:, O_DIM * 2:]
 
         # 欧式距离
         pos_dist = K.sum(K.square(anc - pos), axis=-1, keepdims=True)
