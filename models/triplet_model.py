@@ -49,6 +49,9 @@ class TripletModel(ModelBase):
     @staticmethod
     def triplet_loss_v2(y_true, y_pred, N=512, beta=512, epsilon=1e-8):
         """
+        参考：https://towardsdatascience.com/lossless-triplet-loss-7e932f990b24
+        ！！！需要输出层使用sigmoid激活函数！
+        
         Implementation of the triplet loss function
 
         Arguments:
@@ -70,17 +73,7 @@ class TripletModel(ModelBase):
         # 欧式距离
         pos_dist = K.sum(K.square(anc - pos), axis=-1, keepdims=True)
         neg_dist = K.sum(K.square(anc - neg), axis=-1, keepdims=True)
-        # basic_loss = pos_dist - neg_dist + TripletModel.MARGIN
-        # anchor = tf.convert_to_tensor(y_pred[:, 0:N])
-        # positive = tf.convert_to_tensor(y_pred[:, N:N * 2])
-        # negative = tf.convert_to_tensor(y_pred[:, N * 2:N * 3])
-        # distance between the anchor and the positive
-        # pos_dist = tf.reduce_sum(tf.square(tf.subtract(anchor, positive)), 1)
-        # distance between the anchor and the negative
-        # neg_dist = tf.reduce_sum(tf.square(tf.subtract(anchor, negative)), 1)
-        # Non Linear Values
 
-        # -ln(-x/N+1)
         pos_dist = -K.log(-(pos_dist / beta) + 1 + epsilon)
         neg_dist = -K.log(-((N - neg_dist) / beta) + 1 + epsilon)
 
