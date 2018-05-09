@@ -29,7 +29,7 @@ class DistanceApi(object):
         file_name = 'data_test.bin.npz'
         data_path = os.path.join(ROOT_DIR, 'experiments', file_name)
         data_all = np.load(data_path)
-        b_list = data_all['b_list'].astype(np.int64)
+        b_list = data_all['b_list']
         l_list = data_all['l_list']
         n_list = data_all['n_list']
         return b_list, l_list, n_list
@@ -44,7 +44,7 @@ class DistanceApi(object):
             return self.hamdist(self.b_list[i_id], data)
 
         start_time = datetime.now()  # 起始时间
-        b_list_dist = [hamdist_for(x) for x in np.nditer(self.b_list)]
+        b_list_dist = [hamdist_for(x) for x in list(self.b_list)]
         elapsed_time = (datetime.now() - start_time).total_seconds()
         run_num = self.b_list.shape[0]
         tps = float(run_num) / float(elapsed_time)

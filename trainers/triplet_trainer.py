@@ -14,7 +14,7 @@ from sklearn.exceptions import UndefinedMetricWarning
 from sklearn.metrics import precision_recall_fscore_support
 
 from bases.trainer_base import TrainerBase
-from root_dir import ROOT_DIR
+from root_dir import ROOT_DIR, O_DIM
 from utils.np_utils import prp_2_oh_array
 from utils.utils import mkdir_if_not_exist
 
@@ -209,8 +209,6 @@ class TlMetric(Callback):
         print '[INFO] %s' % str(np.average(self.validation_data[2]))
         y_pred0 = self.model.predict(X_te0)  # 验证模型
 
-        O_DIM = 512  # 输出256维
-
         dist_min, dist_max, dist_avg, dist_acc = \
             TripletTrainer.show_acc_facets(y_pred0[:, :O_DIM], y_pred0[:, O_DIM:O_DIM * 2], y_pred0[:, O_DIM * 2:])
 
@@ -255,8 +253,6 @@ class TrainValTensorBoard(TensorBoard):
         print '[INFO] %s' % str(np.average(self.validation_data[1]))
         print '[INFO] %s' % str(np.average(self.validation_data[2]))
         y_pred0 = self.model.predict(X_te0)  # 验证模型
-
-        O_DIM = 512  # 输出256维
 
         dist_min, dist_max, dist_avg, dist_acc = \
             TripletTrainer.show_acc_facets(y_pred0[:, :O_DIM], y_pred0[:, O_DIM:O_DIM * 2], y_pred0[:, O_DIM * 2:])

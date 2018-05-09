@@ -14,7 +14,7 @@ p = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if p not in sys.path:
     sys.path.append(p)
 
-from root_dir import ROOT_DIR
+from root_dir import ROOT_DIR, O_DIM
 from models.triplet_model import TripletModel
 
 
@@ -24,7 +24,7 @@ class HashPreProcessor(object):
 
     def process(self):
         print('[INFO] 转换开始')
-        model_path = os.path.join(ROOT_DIR, "experiments/music_tl/checkpoints", "triplet_loss_model_91_0.9989.h5")
+        model_path = os.path.join(ROOT_DIR, "experiments/music_tl/checkpoints", "triplet_loss_model_21_0.9965.h5")
         model = load_model(model_path, custom_objects={'triplet_loss': TripletModel.triplet_loss})
 
         file_name = 'data_test.npz'
@@ -57,11 +57,13 @@ class HashPreProcessor(object):
             'neg_input': np.zeros(X_test.shape)
         }
         res = model.predict(X)
-        O_DIM = 512
+        print('[INFO] res.shape: %s' % str(res.shape))
         data = res[:, :O_DIM]
         oz_arr = np.where(data >= 0.0, 1.0, 0.0).astype(int)
+        print oz_arr[0]
         # print np.sum(oz_arr, axis=1)  # 测试分布
         oz_bin = np.apply_along_axis(self.to_binary, axis=1, arr=oz_arr)
+        print('[INFO] oz_bin: %s' % oz_bin[0])
 
         out_path = os.path.join(ROOT_DIR, 'experiments', file_name.replace('.npz', '') + ".bin.npz")
         np.savez(out_path, b_list=oz_bin, l_list=l_list, n_list=n_list)
@@ -71,7 +73,7 @@ class HashPreProcessor(object):
 
     @staticmethod
     def to_binary(bit_list):
-        out = 0
+        out = long(0)  # 必须指定为long，否则存储过少
         for bit in bit_list:
             out = (out << 1) | bit
         return out

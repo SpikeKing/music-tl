@@ -15,7 +15,7 @@ from bases.infer_base import InferBase
 from keras.models import load_model
 
 from models.triplet_model import TripletModel
-from root_dir import ROOT_DIR
+from root_dir import ROOT_DIR, O_DIM
 from utils.utils import mkdir_if_not_exist
 
 
@@ -55,7 +55,6 @@ class TripletInfer(InferBase):
         tps = float(len(y_test)) / float(elapsed_time)
         print "Num: %s, Time: %s, TPS: %s (%s ms)" % (len(y_test), elapsed_time, tps, (1 / tps * 1000))
 
-        O_DIM = 512
         data = res[:, :O_DIM]
         print "验证结果结构: %s" % str(data.shape)
         log_dir = os.path.join(ROOT_DIR, self.config.tb_dir, "test")
