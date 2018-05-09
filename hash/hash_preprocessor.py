@@ -73,7 +73,8 @@ class HashPreProcessor(object):
 
     @staticmethod
     def to_binary(bit_list):
-        out = long(0)  # 必须指定为long，否则存储过少
+        # out = long(0)  # 必须指定为long，否则存储过少
+        out = 0  # 必须指定为long，否则存储过少
         for bit in bit_list:
             out = (out << 1) | bit
         return out

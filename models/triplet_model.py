@@ -150,8 +150,8 @@ class TripletModel(ModelBase):
             sub_model = MaxPooling1D(pool_size=pool_size)(sub_model)
             sub_model = LSTM(O_DIM, return_sequences=True)(sub_model)  # 统一输出维度
             sub_model = LSTM(O_DIM, return_sequences=True)(sub_model)
-            sub_model = LSTM(O_DIM)(sub_model)
-            main_output = Dropout(dropout_rate)(sub_model)
+            main_output = LSTM(O_DIM)(sub_model)
+            # main_output = Dropout(dropout_rate)(sub_model)
 
             return main_output
 

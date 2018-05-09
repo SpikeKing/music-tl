@@ -22,22 +22,23 @@ def split_train_test(folder_name, n_part=6):
     将数据集分为训练数据和测试数据
 
     :param folder_name: 文件夹名
-    :param n_part: 划分块，1份为测试，其余为训练
+    :param n_part: 划分块，1份为测试，其余份为训练
     :return: None
     """
     paths, names = traverse_dir_files(folder_name)
     train_dir = os.path.join(folder_name, 'train')
     test_dir = os.path.join(folder_name, 'test')
-    mkdir_if_not_exist(train_dir)
+
+    mkdir_if_not_exist(train_dir)  # 创建文件夹
     mkdir_if_not_exist(test_dir)
 
     print "[INFO] 训练总量： %s" % len(paths)
     count = 0
     for path, name in zip(paths, names):
         count += 1
-        if count % n_part != 0:
+        if count % n_part != 0:  # 训练样本
             shutil.move(path, os.path.join(train_dir, name))  # 移动文件
-        else:
+        else:  # 测试样本
             shutil.move(path, os.path.join(test_dir, name))
 
     train_ps, _ = traverse_dir_files(train_dir)
