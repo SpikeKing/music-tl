@@ -24,15 +24,31 @@ class HashPreProcessor(object):
 
     def process(self):
         print('[INFO] 转换开始')
-        model_path = os.path.join(ROOT_DIR, "experiments/music_tl/checkpoints", "triplet_loss_model_21_0.9965.h5")
+        model_path = os.path.join(ROOT_DIR, "experiments/music_tl/checkpoints", "triplet_loss_model_91_0.9989.h5")
         model = load_model(model_path, custom_objects={'triplet_loss': TripletModel.triplet_loss})
+
+        file_name = 'data_train.npz'
+        data_path = os.path.join(ROOT_DIR, 'experiments', file_name)
+        data_all = np.load(data_path)
+        X_test1 = data_all['f_list']
+        l_list1 = data_all['l_list']
+        n_list1 = data_all['n_list']
+
+        print('[INFO] X_test1.shape: ' + str(X_test1.shape))
 
         file_name = 'data_test.npz'
         data_path = os.path.join(ROOT_DIR, 'experiments', file_name)
         data_all = np.load(data_path)
-        X_test = data_all['f_list']
-        l_list = data_all['l_list']
-        n_list = data_all['n_list']
+        X_test2 = data_all['f_list']
+        l_list2 = data_all['l_list']
+        n_list2 = data_all['n_list']
+        print('[INFO] X_test2.shape: ' + str(X_test2.shape))
+
+        X_test = np.concatenate((X_test1, X_test2), axis=0)
+        l_list = np.concatenate((l_list1, l_list2), axis=0)
+        n_list = np.concatenate((n_list1, n_list2), axis=0)
+
+        print('[INFO] X_test.shape: ' + str(X_test.shape))
 
         def split_num(name):
             name = str(name)
@@ -73,8 +89,8 @@ class HashPreProcessor(object):
 
     @staticmethod
     def to_binary(bit_list):
-        # out = long(0)  # 必须指定为long，否则存储过少
-        out = 0  # 必须指定为long，否则存储过少
+        out = long(0)  # 必须指定为long，否则存储过少
+        # out = 0  # 必须指定为long，否则存储过少
         for bit in bit_list:
             out = (out << 1) | bit
         return out

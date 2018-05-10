@@ -7,14 +7,18 @@ Created by C. L. Wang on 2018/5/8
 
 import os
 import sys
+
 import numpy as np
+from keras.models import load_model
 
 p = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if p not in sys.path:
     sys.path.append(p)
 
+import librosa
+from models.triplet_model import TripletModel
 from datetime import datetime
-from root_dir import ROOT_DIR
+from root_dir import ROOT_DIR, O_DIM
 
 from utils.utils import sort_two_list
 
@@ -40,6 +44,8 @@ class DistanceApi(object):
         i_id = np.where(self.n_list == i_name)
         i_id = int(i_id[0])  # 索引ID
 
+        # print bin(self.b_list[i_id])
+
         def hamdist_for(data):  # Hamming距离
             return self.hamdist(self.b_list[i_id], data)
 
@@ -50,6 +56,46 @@ class DistanceApi(object):
         tps = float(run_num) / float(elapsed_time)
         print "[INFO] Num: %s, Time: %s s, TPS: %0.0f (%s ms)" % (run_num, elapsed_time, tps, (1 / tps * 1000))
 
+        sb_list, sn_list = sort_two_list(list(b_list_dist), list(self.n_list))
+        return sb_list[0:20], sn_list[0:20]
+
+    def distance_for_mp3(self, mp3_path):
+        from data_loaders.data_augment import get_feature
+
+        model_path = os.path.join(ROOT_DIR, "experiments/music_tl/checkpoints", "triplet_loss_model_91_0.9989.h5")
+        model = load_model(model_path, custom_objects={'triplet_loss': TripletModel.triplet_loss})
+
+        y, sr = librosa.load(mp3_path)
+        features = get_feature(y, sr)
+
+        features = np.load('./993238670.npy')
+        features = np.reshape(features, (1, 256, 32))
+
+        # file_name = 'data_test.npz'
+        # data_path = os.path.join(ROOT_DIR, 'experiments', file_name)
+        # data_all = np.load(data_path)
+        # X_test2 = data_all['f_list']
+        # X_test2 = np.transpose(X_test2, [0, 2, 1])
+
+        X = {
+            'anc_input': features,
+            'pos_input': features,
+            'neg_input': features
+        }
+
+        res = model.predict(X)
+        print res.shape
+        print res[0]
+        data_prop = np.squeeze(res[:, :O_DIM])
+        oz_arr = np.where(data_prop >= 0.0, 1.0, 0.0).astype(int)
+        input_b = self.to_binary(oz_arr)
+
+        print bin(input_b)
+
+        def hamdist_for(o_data):  # Hamming距离
+            return self.hamdist(input_b, o_data)
+
+        b_list_dist = [hamdist_for(x) for x in list(self.b_list)]
         sb_list, sn_list = sort_two_list(list(b_list_dist), list(self.n_list))
         return sb_list[0:20], sn_list[0:20]
 
@@ -65,11 +111,33 @@ class DistanceApi(object):
         # return ans
         return bin(a ^ b).count('1')  # 更快
 
+    @staticmethod
+    def to_binary(bit_list):
+        out = long(0)  # 必须指定为long，否则存储过少
+        # out = 0  # 必须指定为long，否则存储过少
+        for bit in bit_list:
+            out = (out << 1) | bit
+        return out
 
-if __name__ == '__main__':
+
+def test_of_distance():
     da = DistanceApi()
-    audio_name = '926738397'
+    audio_name = '992978262'
     print('[INFO] 目标音频: %s' % audio_name)
     rb_list, rn_list = da.distance(audio_name)
     print('[INFO] 距离: %s' % rb_list)
     print('[INFO] 相似: %s' % rn_list)
+
+
+def test_of_mp3():
+    mp3_path = os.path.join(ROOT_DIR, 'experiments/raw_data/train', '993313777_17.40.mp3')
+    da = DistanceApi()
+    print('[INFO] 目标音频: %s' % mp3_path)
+    rb_list, rn_list = da.distance_for_mp3(mp3_path)
+    print('[INFO] 距离: %s' % rb_list)
+    print('[INFO] 相似: %s' % rn_list)
+
+
+if __name__ == '__main__':
+    test_of_distance()
+    # test_of_mp3()

@@ -18,20 +18,34 @@ def main_predict():
         '-n', '--name',
         dest='name',
         metavar='name',
-        default='None',
         help='add a target name')
+    parser.add_argument(
+        '-m', '--mp3',
+        dest='mp3',
+        metavar='mp3',
+        help='add a target mp3')
     args = parser.parse_args()
     if len(sys.argv) == 1:
         parser.print_help()
         exit(0)
 
     audio_name = args.name
-    print('[INFO] 目标音频: %s' % audio_name)
-    da = DistanceApi()
-    rb_list, rn_list = da.distance(audio_name)
-    rn_list = [x.replace('.npy', '') for x in list(np.squeeze(rn_list))]
-    print('[INFO] 距离: %s' % rb_list)
-    print('[INFO] 相似: %s' % rn_list)
+    if audio_name:
+        print('[INFO] 目标音频: %s' % audio_name)
+        da = DistanceApi()
+        rb_list, rn_list = da.distance(audio_name)
+        rn_list = [x.replace('.npy', '') for x in list(np.squeeze(rn_list))]
+        print('[INFO] 距离: %s' % rb_list)
+        print('[INFO] 相似: %s' % rn_list)
+
+    mp3_path = args.mp3
+    if mp3_path:
+        print('[INFO] 目标音频: %s' % mp3_path)
+        da = DistanceApi()
+        rb_list, rn_list = da.distance_for_mp3(mp3_path)
+        rn_list = [x.replace('.npy', '') for x in list(np.squeeze(rn_list))]
+        print('[INFO] 距离: %s' % rb_list)
+        print('[INFO] 相似: %s' % rn_list)
 
 
 if __name__ == '__main__':
