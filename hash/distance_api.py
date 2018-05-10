@@ -44,7 +44,7 @@ class DistanceApi(object):
         i_id = np.where(self.n_list == i_name)
         i_id = int(i_id[0])  # 索引ID
 
-        # print bin(self.b_list[i_id])
+        print bin(self.b_list[i_id])
 
         def hamdist_for(data):  # Hamming距离
             return self.hamdist(self.b_list[i_id], data)
@@ -68,24 +68,22 @@ class DistanceApi(object):
         y, sr = librosa.load(mp3_path)
         features = get_feature(y, sr)
 
-        features = np.load('./993238670.npy')
-        features = np.reshape(features, (1, 256, 32))
+        # features = np.load('./993238670.npy')
+        features = np.reshape(features, (1, 32, 256))
+        features = np.transpose(features, [0, 2, 1])
 
         # file_name = 'data_test.npz'
         # data_path = os.path.join(ROOT_DIR, 'experiments', file_name)
         # data_all = np.load(data_path)
         # X_test2 = data_all['f_list']
-        # X_test2 = np.transpose(X_test2, [0, 2, 1])
 
         X = {
             'anc_input': features,
-            'pos_input': features,
-            'neg_input': features
+            'pos_input': np.zeros(features.shape),
+            'neg_input': np.zeros(features.shape)
         }
 
         res = model.predict(X)
-        print res.shape
-        print res[0]
         data_prop = np.squeeze(res[:, :O_DIM])
         oz_arr = np.where(data_prop >= 0.0, 1.0, 0.0).astype(int)
         input_b = self.to_binary(oz_arr)
@@ -122,7 +120,7 @@ class DistanceApi(object):
 
 def test_of_distance():
     da = DistanceApi()
-    audio_name = '992978262'
+    audio_name = '993238670'
     print('[INFO] 目标音频: %s' % audio_name)
     rb_list, rn_list = da.distance(audio_name)
     print('[INFO] 距离: %s' % rb_list)
@@ -130,7 +128,7 @@ def test_of_distance():
 
 
 def test_of_mp3():
-    mp3_path = os.path.join(ROOT_DIR, 'experiments/raw_data/train', '993313777_17.40.mp3')
+    mp3_path = os.path.join(ROOT_DIR, 'experiments/raw_data/train', '993238670_18.20.mp3')
     da = DistanceApi()
     print('[INFO] 目标音频: %s' % mp3_path)
     rb_list, rn_list = da.distance_for_mp3(mp3_path)
@@ -140,4 +138,4 @@ def test_of_mp3():
 
 if __name__ == '__main__':
     test_of_distance()
-    # test_of_mp3()
+    test_of_mp3()
