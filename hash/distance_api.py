@@ -65,12 +65,15 @@ class DistanceApi(object):
         model_path = os.path.join(ROOT_DIR, "experiments/music_tl/checkpoints", "triplet_loss_model_91_0.9989.h5")
         model = load_model(model_path, custom_objects={'triplet_loss': TripletModel.triplet_loss})
 
+        # features = np.load('./993238670.npy')
+        start_time = datetime.now()  # 起始时间
         y, sr = librosa.load(mp3_path)
         features = get_feature(y, sr)
-
-        # features = np.load('./993238670.npy')
         features = np.reshape(features, (1, 32, 256))
         features = np.transpose(features, [0, 2, 1])
+        elapsed_time = (datetime.now() - start_time).total_seconds()
+        tps = float(1.0) / float(elapsed_time)
+        print "Time: %s s, TPS: %0.0f (%s ms)" % (elapsed_time, tps, (1 / tps * 1000))
 
         # file_name = 'data_test.npz'
         # data_path = os.path.join(ROOT_DIR, 'experiments', file_name)

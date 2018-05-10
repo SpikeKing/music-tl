@@ -149,8 +149,8 @@ class TripletModel(ModelBase):
             return main_output
 
         ins_input = Input(shape=(256, 32))
-        model = cnn_lstm_cell(ins_input)  # 合并模型
-        output = Dropout(0.4)(model)
+        output = cnn_lstm_cell(ins_input)  # 合并模型
+        # output = Dropout(0.4)(model)
         model = Model(ins_input, output)
 
         plot_model(model, to_file=os.path.join(self.config.img_dir, "sub_model.png"),
