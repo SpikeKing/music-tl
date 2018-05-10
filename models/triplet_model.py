@@ -51,7 +51,7 @@ class TripletModel(ModelBase):
         """
         参考：https://towardsdatascience.com/lossless-triplet-loss-7e932f990b24
         ！！！需要输出层使用sigmoid激活函数！
-        
+
         Implementation of the triplet loss function
 
         Arguments:
