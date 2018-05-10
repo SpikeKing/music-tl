@@ -1,7 +1,5 @@
 # 基于深度哈希编码的短视频音乐相似性计算
 
-[算法文档](http://cf.meitu.com/confluence/pages/viewpage.action?pageId=50883145) in CF
-
 工程框架
 
 ``` text
