@@ -39,6 +39,32 @@ def audio_slice(y, sr, name_id, folder):
     file3 = os.path.join(folder, name_id + '.slice_last' + '.npy')
     np.save(file3, get_feature(y[n_part * 2:], sr))
 
+    file1 = os.path.join(folder, name_id + '.large_2' + '.npy')
+    np.save(file1, get_feature(np.tile(y, 2), sr))
+    # librosa.output.write_wav(os.path.join(folder, name_id + '.large_2' + '.mp3'), np.tile(y, 2), sr)
+
+    file2 = os.path.join(folder, name_id + '.large_3' + '.npy')
+    np.save(file2, get_feature(np.tile(y, 3), sr))
+
+    file3 = os.path.join(folder, name_id + '.large_4' + '.npy')
+    np.save(file3, get_feature(np.tile(y, 4), sr))
+
+    file1 = os.path.join(folder, name_id + '.tiny_1' + '.npy')
+    np.save(file1, get_feature(y[:n_part], sr))
+
+    file2 = os.path.join(folder, name_id + '.tiny_2' + '.npy')
+    np.save(file2, get_feature(y[n_part:n_part * 2], sr))
+    # librosa.output.write_wav(os.path.join(folder, name_id + '.tiny_2' + '.mp3'), y[n_part:n_part * 2], sr)
+
+    file3 = os.path.join(folder, name_id + '.tiny_3' + '.npy')
+    np.save(file3, get_feature(y[n_part * 2:n_part * 3], sr))
+
+    file3 = os.path.join(folder, name_id + '.tiny_4' + '.npy')
+    np.save(file3, get_feature(y[n_part * 3:n_part * 4], sr))
+
+    file3 = os.path.join(folder, name_id + '.tiny_5' + '.npy')
+    np.save(file3, get_feature(y[n_part * 4:], sr))
+
 
 def audio_roll(y, sr, name_id, folder):
     """
@@ -201,7 +227,7 @@ def process_audio_augment():
     """
     print "[INFO] 特征提取开始! "
 
-    npy_folder = os.path.join(ROOT_DIR, 'experiments', 'npy_data')
+    npy_folder = os.path.join(ROOT_DIR, 'experiments', 'npy_data_v2')
     mkdir_if_not_exist(npy_folder)
     npy_train = os.path.join(npy_folder, 'train')
     npy_test = os.path.join(npy_folder, 'test')
