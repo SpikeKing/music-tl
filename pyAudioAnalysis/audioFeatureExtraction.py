@@ -115,6 +115,8 @@ def stSpectralRollOff(X, c, fs):
     """Computes spectral roll-off"""
     totalEnergy = numpy.sum(X ** 2)
     fftLength = len(X)
+    if fftLength == 0:
+        raise Exception('audioFeatureExtraction - stSpectralRollOff Error!!!')
     Thres = c*totalEnergy
     # Ffind the spectral rolloff as the frequency position where the respective spectral energy is equal to c*totalEnergy
     CumSum = numpy.cumsum(X ** 2) + eps
@@ -539,7 +541,10 @@ def stFeatureExtraction(signal, Fs, Win, Step):
     signal = signal / (2.0 ** 15)
     DC = signal.mean()
     MAX = (numpy.abs(signal)).max()
-    signal = (signal - DC) / MAX
+    if MAX != 0:
+        signal = (signal - DC) / MAX
+    else:
+        raise Exception('audioFeatureExtraction - stFeatureExtraction Error!')
 
     N = len(signal)                                # total number of samples
     curPos = 0
@@ -645,7 +650,10 @@ def stFeatureSpeed(signal, Fs, Win, Step):
     signal = signal / (2.0 ** 15)
     DC = signal.mean()
     MAX = (numpy.abs(signal)).max()
-    signal = (signal - DC) / MAX
+    if MAX != 0:
+        signal = (signal - DC) / MAX
+    else:
+        raise Exception('audioFeatureExtraction - stFeatureSpeed Error!')
     # print (numpy.abs(signal)).max()
 
     N = len(signal)        # total number of signals
