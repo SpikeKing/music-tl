@@ -185,7 +185,6 @@ def generate_augment(params):
     """
     file_path, name_id, folder = params
     try:
-        print '[INFO] 音频ID ' + name_id
         y, sr = librosa.load(file_path)
         saved_path = os.path.join(folder, name_id + '.npy')
         np.save(saved_path, get_feature(y, sr))  # 存储原文件的npy
@@ -197,9 +196,11 @@ def generate_augment(params):
         audio_noise(y, sr, name_id, folder)
         audio_high(y, sr, name_id, folder)
         audio_low(y, sr, name_id, folder)
-
     except Exception as e:
-        print '[Exception] 异常: %s' % e
+        # print '[Exception] 异常: %s' % e
+        print '[Exception] 异常音频ID ' + name_id
+
+    print '[INFO] 音频ID ' + name_id
 
 
 def mp_augment(raw_dir, npy_dir, n_process=40):
