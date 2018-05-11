@@ -156,7 +156,7 @@ class TripletTrainer(TrainerBase):
         return res_min, res_max, res_avg, res_acc
 
     @staticmethod
-    def create_pairs(x, digit_indices, num_classes, clz_samples=19, n_loop=1):
+    def create_pairs(x, digit_indices, num_classes, clz_samples=(19 + 8), n_loop=1):
         """
         创建正例和负例的Pairs
         :param x: 数据

@@ -39,31 +39,31 @@ def audio_slice(y, sr, name_id, folder):
     file3 = os.path.join(folder, name_id + '.slice_last' + '.npy')
     np.save(file3, get_feature(y[n_part * 2:], sr))
 
-    file1 = os.path.join(folder, name_id + '.large_2' + '.npy')
-    np.save(file1, get_feature(np.tile(y, 2), sr))
+    file4 = os.path.join(folder, name_id + '.large_2' + '.npy')
+    np.save(file4, get_feature(np.tile(y, 2), sr))
     # librosa.output.write_wav(os.path.join(folder, name_id + '.large_2' + '.mp3'), np.tile(y, 2), sr)
 
-    file2 = os.path.join(folder, name_id + '.large_3' + '.npy')
-    np.save(file2, get_feature(np.tile(y, 3), sr))
+    file5 = os.path.join(folder, name_id + '.large_3' + '.npy')
+    np.save(file5, get_feature(np.tile(y, 3), sr))
 
-    file3 = os.path.join(folder, name_id + '.large_4' + '.npy')
-    np.save(file3, get_feature(np.tile(y, 4), sr))
+    file6 = os.path.join(folder, name_id + '.large_4' + '.npy')
+    np.save(file6, get_feature(np.tile(y, 4), sr))
 
-    file1 = os.path.join(folder, name_id + '.tiny_1' + '.npy')
-    np.save(file1, get_feature(y[:n_part], sr))
+    file7 = os.path.join(folder, name_id + '.tiny_1' + '.npy')
+    np.save(file7, get_feature(y[:n_part], sr))
 
-    file2 = os.path.join(folder, name_id + '.tiny_2' + '.npy')
-    np.save(file2, get_feature(y[n_part:n_part * 2], sr))
+    file8 = os.path.join(folder, name_id + '.tiny_2' + '.npy')
+    np.save(file8, get_feature(y[n_part:n_part * 2], sr))
     # librosa.output.write_wav(os.path.join(folder, name_id + '.tiny_2' + '.mp3'), y[n_part:n_part * 2], sr)
 
-    file3 = os.path.join(folder, name_id + '.tiny_3' + '.npy')
-    np.save(file3, get_feature(y[n_part * 2:n_part * 3], sr))
+    file9 = os.path.join(folder, name_id + '.tiny_3' + '.npy')
+    np.save(file9, get_feature(y[n_part * 2:n_part * 3], sr))
 
-    file3 = os.path.join(folder, name_id + '.tiny_4' + '.npy')
-    np.save(file3, get_feature(y[n_part * 3:n_part * 4], sr))
+    file10 = os.path.join(folder, name_id + '.tiny_4' + '.npy')
+    np.save(file10, get_feature(y[n_part * 3:n_part * 4], sr))
 
-    file3 = os.path.join(folder, name_id + '.tiny_5' + '.npy')
-    np.save(file3, get_feature(y[n_part * 4:], sr))
+    file11 = os.path.join(folder, name_id + '.tiny_5' + '.npy')
+    np.save(file11, get_feature(y[n_part * 4:], sr))
 
 
 def audio_roll(y, sr, name_id, folder):
