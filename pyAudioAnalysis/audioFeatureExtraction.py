@@ -19,6 +19,9 @@ import audioBasicIO
 import utilities
 from scipy.signal import lfilter, hamming
 #from scikits.talkbox import lpc
+import warnings
+
+warnings.filterwarnings('error')
 
 eps = 0.00000001
 
@@ -121,7 +124,7 @@ def stSpectralRollOff(X, c, fs):
     try:
         [a, ] = numpy.nonzero(CumSum > Thres)
     except Warning:
-        raise Exception('ERROR')
+        print 'Warning was raised as an exception!'
     if len(a) > 0:
         mC = numpy.float64(a[0]) / (float(fftLength))
     else:
@@ -546,7 +549,7 @@ def stFeatureExtraction(signal, Fs, Win, Step):
     try:
         signal = (signal - DC) / MAX
     except Warning:
-        raise Exception('audioFeatureExtraction - stFeatureExtraction Error!')
+        print 'Warning was raised as an exception!'
 
     N = len(signal)                                # total number of samples
     curPos = 0
@@ -655,7 +658,7 @@ def stFeatureSpeed(signal, Fs, Win, Step):
     try:
         signal = (signal - DC) / MAX
     except Warning:
-        raise Exception('audioFeatureExtraction - stFeatureSpeed Error!')
+        print 'Warning was raised as an exception!'
     # print (numpy.abs(signal)).max()
 
     N = len(signal)        # total number of signals
