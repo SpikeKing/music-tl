@@ -257,8 +257,8 @@ def process_audio_augment():
     raw_train = os.path.join(ROOT_DIR, 'experiments', 'raw_data', 'train')
     raw_test = os.path.join(ROOT_DIR, 'experiments', 'raw_data', 'test')
 
-    mp_augment(raw_train, npy_train)
-    # mp_augment(raw_test, npy_test)
+    # mp_augment(raw_train, npy_train)
+    mp_augment(raw_test, npy_test)
     n_tr, _ = traverse_dir_files(npy_train)
     n_te, _ = traverse_dir_files(npy_test)
     print('训练数据: %s' % len(n_tr))
