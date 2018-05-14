@@ -4,21 +4,20 @@
 Copyright (c) 2018. All rights reserved.
 Created by C. L. Wang on 2018/5/2
 
-音频数据增强（Data Augment），存储为32*dim的npy格式
+音频数据扩充（Data Augment），存储为32*dim的npy格式
 """
 
 import os
 import sys
 
-import cv2
 import librosa
 import numpy as np
+from multiprocessing.pool import Pool
 
 p = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if p not in sys.path:
     sys.path.append(p)
 
-from multiprocessing.pool import Pool
 from pyAudioAnalysis import audioFeatureExtraction
 from root_dir import ROOT_DIR
 from utils.utils import *
@@ -26,7 +25,12 @@ from utils.utils import *
 
 def audio_slice(y, sr, name_id, folder):
     """
-    音频剪裁，平分5段，剪裁分为三种，[0:3]，[1:4]，[2:5]
+    音频剪裁，平分5段，
+    1. 剪裁：[0:3]，[1:4]，[2:5]
+    2. 子集：[2], [3], [4]
+    3. 超集：2倍，3倍
+
+    生成11个扩充数据
     """
     n_part = len(y) / 5
 
@@ -41,20 +45,12 @@ def audio_slice(y, sr, name_id, folder):
 
     file4 = os.path.join(folder, name_id + '.large_2' + '.npy')
     np.save(file4, get_feature(np.tile(y, 2), sr))
-    # librosa.output.write_wav(os.path.join(folder, name_id + '.large_2' + '.mp3'), np.tile(y, 2), sr)
 
     file5 = os.path.join(folder, name_id + '.large_3' + '.npy')
     np.save(file5, get_feature(np.tile(y, 3), sr))
 
-    file6 = os.path.join(folder, name_id + '.large_4' + '.npy')
-    np.save(file6, get_feature(np.tile(y, 4), sr))
-
-    file7 = os.path.join(folder, name_id + '.tiny_1' + '.npy')
-    np.save(file7, get_feature(y[:n_part], sr))
-
     file8 = os.path.join(folder, name_id + '.tiny_2' + '.npy')
     np.save(file8, get_feature(y[n_part:n_part * 2], sr))
-    # librosa.output.write_wav(os.path.join(folder, name_id + '.tiny_2' + '.mp3'), y[n_part:n_part * 2], sr)
 
     file9 = os.path.join(folder, name_id + '.tiny_3' + '.npy')
     np.save(file9, get_feature(y[n_part * 2:n_part * 3], sr))
@@ -62,15 +58,14 @@ def audio_slice(y, sr, name_id, folder):
     file10 = os.path.join(folder, name_id + '.tiny_4' + '.npy')
     np.save(file10, get_feature(y[n_part * 3:n_part * 4], sr))
 
-    file11 = os.path.join(folder, name_id + '.tiny_5' + '.npy')
-    np.save(file11, get_feature(y[n_part * 4:], sr))
-
 
 def audio_roll(y, sr, name_id, folder):
     """
-    音频旋转，平分4段，旋转分为三种，[3, 0, 1, 2]，[2, 3, 0, 1]，[1, 2, 3, 0]
+    音频旋转，平分4段，旋转分为三种，[2, 0, 1]，[1, 2, 0]
+
+    生成3个扩充数据
     """
-    n_part = len(y) / 4
+    n_part = len(y) / 3
 
     file1 = os.path.join(folder, name_id + '.roll_1' + '.npy')
     np.save(file1, get_feature(np.roll(y, n_part), sr))
@@ -78,25 +73,30 @@ def audio_roll(y, sr, name_id, folder):
     file2 = os.path.join(folder, name_id + '.roll_2' + '.npy')
     np.save(file2, get_feature(np.roll(y, n_part * 2), sr))
 
-    file3 = os.path.join(folder, name_id + '.roll_3' + '.npy')
-    np.save(file3, get_feature(np.roll(y, n_part * 3), sr))
-
 
 def audio_tune(y, sr, name_id, folder):
     """
-    音频调音，调音分为三种，拉长为5%，10%，15%
+    音频调音，调音分为三种，拉长为30%，50%，100%
     """
-    tune1 = cv2.resize(y, (1, int(len(y) * 1.05))).squeeze()
-    file1 = os.path.join(folder, name_id + '.tune_5' + '.npy')
-    np.save(file1, get_feature(tune1, sr))
+    y_fast1 = librosa.effects.time_stretch(y, 1.3)
+    file1 = os.path.join(folder, name_id + '.fast_3' + '.npy')
+    np.save(file1, get_feature(y_fast1, sr))
+    # librosa.output.write_wav(os.path.join(folder, name_id + '.fast_3' + '.mp3'), y_fast1, sr)
 
-    tune2 = cv2.resize(y, (1, int(len(y) * 1.10))).squeeze()
-    file2 = os.path.join(folder, name_id + '.tune_10' + '.npy')
-    np.save(file2, get_feature(tune2, sr))
+    y_fast2 = librosa.effects.time_stretch(y, 1.5)
+    file2 = os.path.join(folder, name_id + '.fast_5' + '.npy')
+    np.save(file2, get_feature(y_fast2, sr))
+    # librosa.output.write_wav(os.path.join(folder, name_id + '.fast_5' + '.mp3'), y_fast2, sr)
 
-    tune3 = cv2.resize(y, (1, int(len(y) * 1.15))).squeeze()
-    file3 = os.path.join(folder, name_id + '.tune_15' + '.npy')
-    np.save(file3, get_feature(tune3, sr))
+    y_slow1 = librosa.effects.time_stretch(y, 0.9)
+    file4 = os.path.join(folder, name_id + '.slow_1' + '.npy')
+    np.save(file4, get_feature(y_slow1, sr))
+    # librosa.output.write_wav(os.path.join(folder, name_id + '.slow_1' + '.mp3'), y_slow1, sr)
+
+    y_slow3 = librosa.effects.time_stretch(y, 0.7)
+    file6 = os.path.join(folder, name_id + '.slow_3' + '.npy')
+    np.save(file6, get_feature(y_slow3, sr))
+    # librosa.output.write_wav(os.path.join(folder, name_id + '.slow_3' + '.mp3'), y_slow3, sr)
 
 
 def audio_noise(y, sr, name_id, folder):
@@ -105,10 +105,6 @@ def audio_noise(y, sr, name_id, folder):
     """
     np.random.seed(seed=47)
     wn = np.random.randn(len(y))
-
-    yn1 = np.where(y != 0.0, y + 0.01 * wn, 0.0)
-    file1 = os.path.join(folder, name_id + '.noise_1' + '.npy')
-    np.save(file1, get_feature(yn1, sr))
 
     yn2 = np.where(y != 0.0, y + 0.02 * wn, 0.0)
     file2 = os.path.join(folder, name_id + '.noise_2' + '.npy')
@@ -123,37 +119,54 @@ def audio_high(y, sr, name_id, folder):
     """
     音频高音，提高音调，高音分为三种，添加5%，10%，15%
     """
-    yn1 = np.where(y != 0.0, y * 1.05, 0.0)
-    file1 = os.path.join(folder, name_id + '.high_5' + '.npy')
-    np.save(file1, get_feature(yn1, sr))
+    yh1 = librosa.effects.pitch_shift(y, sr, n_steps=2.0)
+    file1 = os.path.join(folder, name_id + '.high_2' + '.npy')
+    np.save(file1, get_feature(yh1, sr))
+    # librosa.output.write_wav(os.path.join(folder, name_id + '.high_2' + '.mp3'), yh1, sr)
 
-    yn2 = np.where(y != 0.0, y * 1.10, 0.0)
-    file2 = os.path.join(folder, name_id + '.high_10' + '.npy')
-    np.save(file2, get_feature(yn2, sr))
+    yh2 = librosa.effects.pitch_shift(y, sr, n_steps=4.0)
+    file2 = os.path.join(folder, name_id + '.high_4' + '.npy')
+    np.save(file2, get_feature(yh2, sr))
+    # librosa.output.write_wav(os.path.join(folder, name_id + '.high_4' + '.mp3'), yh2, sr)
 
-    yn3 = np.where(y != 0.0, y * 1.15, 0.0)
-    file3 = os.path.join(folder, name_id + '.high_15' + '.npy')
-    np.save(file3, get_feature(yn3, sr))
+    yl1 = librosa.effects.pitch_shift(y, sr, n_steps=-2.0)  # 降调
+    file4 = os.path.join(folder, name_id + '.low_2' + '.npy')
+    np.save(file4, get_feature(yl1, sr))
+    # librosa.output.write_wav(os.path.join(folder, name_id + '.low_2' + '.mp3'), yl1, sr)
 
-
-def audio_low(y, sr, name_id, folder):
-    """
-    音频低音，降低音调，低音分为三种，添加-5%，-10%，-15%
-    """
-    yn1 = np.where(y != 0.0, y * 0.95, 0.0)
-    file1 = os.path.join(folder, name_id + '.low_5' + '.npy')
-    np.save(file1, get_feature(yn1, sr))
-
-    yn2 = np.where(y != 0.0, y * 0.90, 0.0)
-    file2 = os.path.join(folder, name_id + '.low_10' + '.npy')
-    np.save(file2, get_feature(yn2, sr))
-
-    yn3 = np.where(y != 0.0, y * 0.85, 0.0)
-    file3 = os.path.join(folder, name_id + '.low_15' + '.npy')
-    np.save(file3, get_feature(yn3, sr))
+    yl2 = librosa.effects.pitch_shift(y, sr, n_steps=-4.0)  # 降调
+    file5 = os.path.join(folder, name_id + '.low_4' + '.npy')
+    np.save(file5, get_feature(yl2, sr))
+    # librosa.output.write_wav(os.path.join(folder, name_id + '.low_4' + '.mp3'), yl2, sr)
 
 
 def get_feature(y, sr, dim=256):
+    """
+    计算音频的特征值
+
+    :param y: 音频帧
+    :param sr: 音频帧率
+    :param dim: 音频特征长度
+    :return: (32, sample_bin)
+    """
+    hop_length = len(y) / (dim + 2) / 64 * 64  # 频率距离需要对于64取模
+
+    # 32维特征值
+    mfcc = librosa.feature.mfcc(y=y, sr=sr, hop_length=hop_length, n_mfcc=13)  # 13dim
+    chroma = librosa.feature.chroma_stft(y=y, sr=sr, hop_length=hop_length)  # 12dim
+    rmse = librosa.feature.rmse(y=y, hop_length=hop_length)  # 1dim
+    sp_ce = librosa.feature.spectral_centroid(y=y, sr=sr, hop_length=hop_length)  # 1dim
+    sp_cf = librosa.feature.spectral_flatness(y=y, hop_length=hop_length)  # 1dim
+    sp_bw = librosa.feature.spectral_bandwidth(y=y, sr=sr, hop_length=hop_length)  # 1dim
+    zcr = librosa.feature.zero_crossing_rate(y=y, hop_length=hop_length)  # 1dim
+    poly = librosa.feature.poly_features(y=y, sr=sr, hop_length=hop_length)  # 2dim
+
+    all_features = np.vstack([mfcc, chroma, rmse, sp_ce, sp_cf, sp_bw, zcr, poly])[:, :dim]
+    # print all_features.shape
+    return all_features
+
+
+def get_feature_old(y, sr, dim=256):
     """
     特征属性:
     1-Zero Crossing Rate: 短时平均过零率, 即每帧信号内, 信号过零点的次数, 体现的是频率特性.
@@ -185,20 +198,25 @@ def generate_augment(params):
     """
     file_path, name_id, folder = params
     try:
-        y, sr = librosa.load(file_path)
+        y_o, sr = librosa.load(file_path)
+        y, _ = librosa.effects.trim(y_o, top_db=40)  # 去掉空白部分
+
+        duration = len(y) / sr
+        if duration < 3:  # 过滤小于3秒的音频
+            print('[INFO] 音频过短: %0.4f' % duration)
+            return
+
         saved_path = os.path.join(folder, name_id + '.npy')
         np.save(saved_path, get_feature(y, sr))  # 存储原文件的npy
 
-        # 18种数据增强
-        audio_slice(y, sr, name_id, folder)
-        audio_roll(y, sr, name_id, folder)
-        audio_tune(y, sr, name_id, folder)
-        audio_noise(y, sr, name_id, folder)
-        audio_high(y, sr, name_id, folder)
-        audio_low(y, sr, name_id, folder)
+        # 20种数据增强
+        audio_slice(y, sr, name_id, folder)  # 8个
+        audio_roll(y, sr, name_id, folder)  # 2个
+        audio_tune(y, sr, name_id, folder)  # 4个
+        audio_noise(y, sr, name_id, folder)  # 2个
+        audio_high(y, sr, name_id, folder)  # 4个
     except Exception as e:
-        # print '[Exception] 异常: %s' % e
-        print '[Exception] 异常音频ID ' + name_id
+        print('[Exception] %s' % e)
 
     print '[INFO] 音频ID ' + name_id
 
@@ -213,10 +231,11 @@ def mp_augment(raw_dir, npy_dir, n_process=40):
     """
     paths, names = traverse_dir_files(raw_dir)
     p = Pool(processes=n_process)  # 进程数尽量与核数匹配
-    print "[INFO] 训练数据: %s" % len(paths)
+    print "[INFO] 数据数: %s" % len(paths)
     for path, name in zip(paths, names):
         name_id = name.split('_')[0]
         params = (path, name_id, npy_dir)
+        generate_augment(params)
         p.apply_async(generate_augment, args=(params,))
     p.close()
     p.join()
@@ -239,7 +258,11 @@ def process_audio_augment():
     raw_test = os.path.join(ROOT_DIR, 'experiments', 'raw_data', 'test')
 
     mp_augment(raw_train, npy_train)
-    mp_augment(raw_test, npy_test)
+    # mp_augment(raw_test, npy_test)
+    n_tr, _ = traverse_dir_files(npy_train)
+    n_te, _ = traverse_dir_files(npy_test)
+    print('训练数据: %s' % len(n_tr))
+    print('测试数据: %s' % len(n_te))
 
     print "[INFO] 特征提取结束! "
 
