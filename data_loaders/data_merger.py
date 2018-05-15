@@ -133,13 +133,13 @@ def merge_data():
     """
     合并数据，npz格式，f_list是特征矩阵，l_list是标签列表，n_list是名称列表
     """
-    train_path = os.path.join(ROOT_DIR, 'experiments', 'npy_data_v2', 'train')
-    train_out = os.path.join(ROOT_DIR, "experiments", "data_train_v2.npz")
-    mp_data_merger(data_dir=train_path, out_dir=train_out)
+    # train_path = os.path.join(ROOT_DIR, 'experiments', 'npy_data_v2', 'train')
+    # train_out = os.path.join(ROOT_DIR, "experiments", "data_train_v2.npz")
+    # mp_data_merger(data_dir=train_path, out_dir=train_out)
 
-    # test_path = os.path.join(ROOT_DIR, 'experiments', 'npy_data', 'test')
-    # test_out = os.path.join(ROOT_DIR, "experiments", "data_test_v2.npz")
-    # mp_data_merger(data_dir=test_path, out_dir=test_out)
+    test_path = os.path.join(ROOT_DIR, 'experiments', 'npy_data_v2', 'test')
+    test_out = os.path.join(ROOT_DIR, "experiments", "data_test_v2.npz")
+    mp_data_merger(data_dir=test_path, out_dir=test_out)
 
 
 if __name__ == '__main__':
