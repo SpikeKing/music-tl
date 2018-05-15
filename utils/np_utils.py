@@ -34,3 +34,17 @@ def is_same_line(td_arr):
 
     same_row = (row_max == row_min)
     return np.any(same_row)
+
+
+def check_error_features(features):
+    """
+    检查含有nan和全相等行等异常数据
+
+    :param features: 二维特征矩阵
+    :return: 是否含有错误数据
+    """
+    if np.isnan(features).sum() > 0:
+        return True
+    elif is_same_line(features):
+        return True
+    return False

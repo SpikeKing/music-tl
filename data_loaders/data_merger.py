@@ -129,20 +129,6 @@ def mp_data_merger(data_dir, out_dir, n_prc=40):
     print "[INFO] 耗时: %s (秒)" % elapsed_time
 
 
-def check_error_features(features):
-    """
-    检查含有nan和全相等行等异常数据
-
-    :param features: 二维特征矩阵
-    :return: 是否含有错误数据
-    """
-    if np.isnan(features).sum() > 0:
-        return True
-    elif is_same_line(features):
-        return True
-    return False
-
-
 def merge_data():
     """
     合并数据，npz格式，f_list是特征矩阵，l_list是标签列表，n_list是名称列表

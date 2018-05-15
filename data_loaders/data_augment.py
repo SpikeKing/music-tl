@@ -14,6 +14,8 @@ import librosa
 import numpy as np
 from multiprocessing.pool import Pool
 
+from utils.np_utils import check_error_features
+
 p = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if p not in sys.path:
     sys.path.append(p)
@@ -205,6 +207,10 @@ def generate_augment(params):
 
         y_o, sr = librosa.load(file_path)
         y, _ = librosa.effects.trim(y_o, top_db=40)  # 去掉空白部分
+
+        if check_error_features(y):
+            print('[Exception] 音频 %s 错误' % name_id)
+            return
 
         duration = len(y) / sr
         if duration < 4:  # 过滤小于3秒的音频
