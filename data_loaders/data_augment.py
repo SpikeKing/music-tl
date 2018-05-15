@@ -212,12 +212,12 @@ def generate_augment(params):
             print('[INFO] 音频 %s 过短: %0.4f' % (name_id, duration))
             return
 
-        features = get_feature(y, sr)
-        if check_error_features(features):
+        if not np.any(y):
             print('[Exception] 音频 %s 错误' % name_id)
             return
 
-        if not np.any(y):
+        features = get_feature(y, sr)
+        if check_error_features(features):
             print('[Exception] 音频 %s 错误' % name_id)
             return
 
