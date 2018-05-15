@@ -203,10 +203,13 @@ def generate_augment(params):
 
         duration = len(y) / sr
         if duration < 3:  # 过滤小于3秒的音频
-            print('[INFO] 音频过短: %0.4f' % duration)
+            print('[INFO] 音频 %s 过短: %0.4f' % (name_id, duration))
             return
 
         saved_path = os.path.join(folder, name_id + '.npy')
+        if os.path.exists(saved_path):
+            print("[INFO] 文件 %s 存在" % name_id)
+            return
         np.save(saved_path, get_feature(y, sr))  # 存储原文件的npy
 
         # 20种数据增强
