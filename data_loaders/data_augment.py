@@ -198,40 +198,40 @@ def generate_augment(params):
     :return: None
     """
     file_path, name_id, folder = params
-    try:
-        saved_path = os.path.join(folder, name_id + '.npy')
-        if os.path.exists(saved_path):
-            print("[INFO] 文件 %s 存在" % name_id)
-            return
-
-        y_o, sr = librosa.load(file_path)
-        y, _ = librosa.effects.trim(y_o, top_db=40)  # 去掉空白部分
-
-        duration = len(y) / sr
-        if duration < 4:  # 过滤小于3秒的音频
-            print('[INFO] 音频 %s 过短: %0.4f' % (name_id, duration))
-            return
-
-        if not np.any(y):
-            print('[Exception] 音频 %s 错误' % name_id)
-            return
-
-        features = get_feature(y, sr)
-        if check_error_features(features):
-            print('[Exception] 音频 %s 错误' % name_id)
-            return
-
-        np.save(saved_path, features)  # 存储原文件的npy
-
-        # 20种数据增强
-        audio_slice(y, sr, name_id, folder)  # 8个
-        audio_roll(y, sr, name_id, folder)  # 2个
-        audio_tune(y, sr, name_id, folder)  # 4个
-        audio_noise(y, sr, name_id, folder)  # 2个
-        audio_high(y, sr, name_id, folder)  # 4个
-    except Exception as e:
-        print('[Exception] %s' % e)
+    # try:
+    saved_path = os.path.join(folder, name_id + '.npy')
+    if os.path.exists(saved_path):
+        print("[INFO] 文件 %s 存在" % name_id)
         return
+
+    y_o, sr = librosa.load(file_path)
+    y, _ = librosa.effects.trim(y_o, top_db=40)  # 去掉空白部分
+
+    duration = len(y) / sr
+    if duration < 4:  # 过滤小于3秒的音频
+        print('[INFO] 音频 %s 过短: %0.4f' % (name_id, duration))
+        return
+
+    if not np.any(y):
+        print('[Exception] 音频 %s 错误' % name_id)
+        return
+
+    features = get_feature(y, sr)
+    if check_error_features(features):
+        print('[Exception] 音频 %s 错误' % name_id)
+        return
+
+    np.save(saved_path, features)  # 存储原文件的npy
+
+    # 20种数据增强
+    audio_slice(y, sr, name_id, folder)  # 8个
+    audio_roll(y, sr, name_id, folder)  # 2个
+    audio_tune(y, sr, name_id, folder)  # 4个
+    audio_noise(y, sr, name_id, folder)  # 2个
+    audio_high(y, sr, name_id, folder)  # 4个
+    # except Exception as e:
+    #     print('[Exception] %s' % e)
+    #     return
 
     print '[INFO] 音频ID ' + name_id
     return
@@ -251,7 +251,6 @@ def mp_augment(raw_dir, npy_dir, n_process=40):
     for path, name in zip(paths, names):
         name_id = name.split('_')[0]
         params = (path, name_id, npy_dir)
-        print params
         generate_augment(params)
         p.apply_async(generate_augment, args=(params,))
     # p.close()
