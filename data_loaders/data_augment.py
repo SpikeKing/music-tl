@@ -221,8 +221,10 @@ def generate_augment(params):
         audio_high(y, sr, name_id, folder)  # 4个
     except Exception as e:
         print('[Exception] %s' % e)
+        return
 
     print '[INFO] 音频ID ' + name_id
+    return
 
 
 def mp_augment(raw_dir, npy_dir, n_process=40):
