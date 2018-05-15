@@ -9,7 +9,7 @@ Created by C. L. Wang on 2018/5/2
 
 import os
 import sys
-from multiprocessing.dummy import Pool
+from multiprocessing import Pool
 
 import librosa
 import numpy as np
@@ -253,8 +253,8 @@ def mp_augment(raw_dir, npy_dir, n_process=40):
         params = (path, name_id, npy_dir)
         generate_augment(params)
         p.apply_async(generate_augment, args=(params,))
-    p.close()
-    p.join()
+    # p.close()
+    # p.join()
 
 
 def process_audio_augment():
