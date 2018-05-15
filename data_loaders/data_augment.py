@@ -14,12 +14,11 @@ import librosa
 import numpy as np
 from multiprocessing.pool import Pool
 
-from utils.np_utils import check_error_features
-
 p = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if p not in sys.path:
     sys.path.append(p)
 
+from utils.np_utils import check_error_features
 from pyAudioAnalysis import audioFeatureExtraction
 from root_dir import ROOT_DIR
 from utils.utils import *
