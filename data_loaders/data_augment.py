@@ -198,6 +198,11 @@ def generate_augment(params):
     """
     file_path, name_id, folder = params
     try:
+        saved_path = os.path.join(folder, name_id + '.npy')
+        if os.path.exists(saved_path):
+            print("[INFO] 文件 %s 存在" % name_id)
+            return
+
         y_o, sr = librosa.load(file_path)
         y, _ = librosa.effects.trim(y_o, top_db=40)  # 去掉空白部分
 
@@ -206,10 +211,6 @@ def generate_augment(params):
             print('[INFO] 音频 %s 过短: %0.4f' % (name_id, duration))
             return
 
-        saved_path = os.path.join(folder, name_id + '.npy')
-        if os.path.exists(saved_path):
-            print("[INFO] 文件 %s 存在" % name_id)
-            return
         np.save(saved_path, get_feature(y, sr))  # 存储原文件的npy
 
         # 20种数据增强
