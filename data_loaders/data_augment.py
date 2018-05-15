@@ -208,7 +208,7 @@ def generate_augment(params):
         y, _ = librosa.effects.trim(y_o, top_db=40)  # 去掉空白部分
 
         if not np.any(y):
-            print('[Exception] 音频 %s 错误' % name_id)
+            print('[Exception] 音频 %s 空' % name_id)
             return
 
         duration = len(y) / sr
