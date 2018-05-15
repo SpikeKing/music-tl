@@ -251,6 +251,7 @@ def mp_augment(raw_dir, npy_dir, n_process=40):
     for path, name in zip(paths, names):
         name_id = name.split('_')[0]
         params = (path, name_id, npy_dir)
+        print params
         generate_augment(params)
         p.apply_async(generate_augment, args=(params,))
     # p.close()
