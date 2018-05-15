@@ -217,6 +217,10 @@ def generate_augment(params):
             print('[Exception] 音频 %s 错误' % name_id)
             return
 
+        if not np.any(y):
+            print('[Exception] 音频 %s 错误' % name_id)
+            return
+
         np.save(saved_path, features)  # 存储原文件的npy
 
         # 20种数据增强
