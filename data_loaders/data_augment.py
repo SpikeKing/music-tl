@@ -202,7 +202,7 @@ def generate_augment(params):
         y, _ = librosa.effects.trim(y_o, top_db=40)  # 去掉空白部分
 
         duration = len(y) / sr
-        if duration < 3:  # 过滤小于3秒的音频
+        if duration < 4:  # 过滤小于3秒的音频
             print('[INFO] 音频 %s 过短: %0.4f' % (name_id, duration))
             return
 
@@ -260,8 +260,8 @@ def process_audio_augment():
     raw_train = os.path.join(ROOT_DIR, 'experiments', 'raw_data', 'train')
     raw_test = os.path.join(ROOT_DIR, 'experiments', 'raw_data', 'test')
 
-    mp_augment(raw_train, npy_train, n_process=10)
-    # mp_augment(raw_test, npy_test, n_process=10)
+    # mp_augment(raw_train, npy_train, n_process=10)
+    mp_augment(raw_test, npy_test, n_process=10)
     n_tr, _ = traverse_dir_files(npy_train)
     n_te, _ = traverse_dir_files(npy_test)
     print('训练数据: %s' % len(n_tr))
