@@ -207,13 +207,13 @@ def generate_augment(params):
         y_o, sr = librosa.load(file_path)
         y, _ = librosa.effects.trim(y_o, top_db=40)  # 去掉空白部分
 
+        if not np.any(y):
+            print('[Exception] 音频 %s 错误' % name_id)
+            return
+
         duration = len(y) / sr
         if duration < 4:  # 过滤小于3秒的音频
             print('[INFO] 音频 %s 过短: %0.4f' % (name_id, duration))
-            return
-
-        if not np.any(y):
-            print('[Exception] 音频 %s 错误' % name_id)
             return
 
         features = get_feature(y, sr)
