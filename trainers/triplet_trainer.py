@@ -218,7 +218,7 @@ class TlMetric(Callback):
         print '[INFO] %s' % str(np.average(y_pred0[:, O_DIM * 2:]))
 
         self.model.save(
-            os.path.join(ROOT_DIR, 'experiments/music_tl/checkpoints', "triplet_loss_model_%s_%s.h5" %
+            os.path.join(ROOT_DIR, 'experiments/music_tl_v2/checkpoints', "triplet_loss_model_%s_%s.h5" %
                          (epoch, '%0.4f' % dist_acc)))  # 存储模型
 
 
@@ -263,7 +263,7 @@ class TrainValTensorBoard(TensorBoard):
         print '[INFO] %s' % str(np.average(y_pred0[:, O_DIM * 2:]))
 
         self.model.save(
-            os.path.join(ROOT_DIR, 'experiments/music_tl/checkpoints', "triplet_loss_model_%s_%s.h5" %
+            os.path.join(ROOT_DIR, 'experiments/music_tl_v2/checkpoints', "triplet_loss_model_%s_%s.h5" %
                          (epoch, '%0.4f' % dist_acc)))  # 存储模型
 
         val_logs = {'dist_min': dist_min, 'dist_max': dist_max, 'dist_avg': dist_avg, 'dist_acc': dist_acc}
