@@ -24,10 +24,10 @@ class HashPreProcessor(object):
 
     def process(self):
         print('[INFO] 转换开始')
-        model_path = os.path.join(ROOT_DIR, "experiments/music_tl/checkpoints", "triplet_loss_model_91_0.9989.h5")
+        model_path = os.path.join(ROOT_DIR, "experiments/music_tl_v2/checkpoints", "triplet_loss_model_35_0.9955.h5")
         model = load_model(model_path, custom_objects={'triplet_loss': TripletModel.triplet_loss})
 
-        file_name = 'data_train.npz'
+        file_name = 'data_train_v2.npz'
         data_path = os.path.join(ROOT_DIR, 'experiments', file_name)
         data_all = np.load(data_path)
         X_test1 = data_all['f_list']
@@ -36,7 +36,7 @@ class HashPreProcessor(object):
 
         print('[INFO] X_test1.shape: ' + str(X_test1.shape))
 
-        file_name = 'data_test.npz'
+        file_name = 'data_test_v2.npz'
         data_path = os.path.join(ROOT_DIR, 'experiments', file_name)
         data_all = np.load(data_path)
         X_test2 = data_all['f_list']
