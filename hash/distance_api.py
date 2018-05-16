@@ -68,7 +68,8 @@ class DistanceApi(object):
 
         # features = np.load('./993238670.npy')
         start_time = datetime.now()  # 起始时间
-        y, sr = librosa.load(mp3_path)
+        y_o, sr = librosa.load(mp3_path)
+        y, _ = librosa.effects.trim(y_o, top_db=40)  # 去掉空白部分
         features = get_feature(y, sr)
         features = np.reshape(features, (1, 32, 256))
         features = np.transpose(features, [0, 2, 1])
