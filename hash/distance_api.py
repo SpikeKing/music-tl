@@ -11,7 +11,6 @@ import sys
 import numpy as np
 
 from keras.models import load_model
-from models.triplet_model import TripletModel
 
 p = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if p not in sys.path:
@@ -21,6 +20,7 @@ import librosa
 from datetime import datetime
 from root_dir import ROOT_DIR, O_DIM
 from data_loaders.data_augment import get_feature
+from models.triplet_model import TripletModel
 
 from utils.utils import sort_two_list
 
