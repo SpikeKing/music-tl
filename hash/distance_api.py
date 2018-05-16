@@ -9,16 +9,18 @@ import os
 import sys
 
 import numpy as np
+
 from keras.models import load_model
+from models.triplet_model import TripletModel
 
 p = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if p not in sys.path:
     sys.path.append(p)
 
 import librosa
-from models.triplet_model import TripletModel
 from datetime import datetime
 from root_dir import ROOT_DIR, O_DIM
+from data_loaders.data_augment import get_feature
 
 from utils.utils import sort_two_list
 
@@ -30,7 +32,8 @@ class DistanceApi(object):
 
     @staticmethod
     def load_data():
-        file_name = 'data_test.bin.npz'
+        file_name = 'data_test_v2.bin.npz'
+        print('模型名称: %s' % file_name)
         data_path = os.path.join(ROOT_DIR, 'experiments', file_name)
         data_all = np.load(data_path)
         b_list = data_all['b_list']
@@ -60,9 +63,7 @@ class DistanceApi(object):
         return sb_list[0:20], sn_list[0:20]
 
     def distance_for_mp3(self, mp3_path):
-        from data_loaders.data_augment import get_feature
-
-        model_path = os.path.join(ROOT_DIR, "experiments/music_tl/checkpoints", "triplet_loss_model_91_0.9989.h5")
+        model_path = os.path.join(ROOT_DIR, "experiments/music_tl_v2/checkpoints", "triplet_loss_model_35_0.9955.h5")
         model = load_model(model_path, custom_objects={'triplet_loss': TripletModel.triplet_loss})
 
         # features = np.load('./993238670.npy')
