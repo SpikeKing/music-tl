@@ -42,7 +42,7 @@ class TripletTrainerMxnet(TrainerBase):
         self.train_core(x_train, y_train, x_test, y_test)
 
     def train_core(self, x_train, y_train, x_test, y_test):
-        ctx = mx.cpu()
+        ctx = mx.gpu()
         self.model.collect_params().initialize(mx.init.Uniform(scale=0.1), ctx=ctx)
         triplet_loss = gluon.loss.TripletLoss(margin=10)
         trainer_triplet = gluon.Trainer(self.model.collect_params(), 'adam')
