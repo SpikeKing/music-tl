@@ -39,6 +39,9 @@ class TripletTrainerMxnet(TrainerBase):
         x_test = self.data[1][0]
         y_test = np.argmax(self.data[1][1], axis=1)
 
+        print('[INFO] 原始训练数据: %s, %s' % (str(x_train.shape), str(y_train.shape)))
+        print('[INFO] 原始测试数据: %s, %s' % (str(x_test.shape), str(y_test.shape)))
+
         self.train_core(x_train, y_train, x_test, y_test)
 
     def train_core(self, x_train, y_train, x_test, y_test):
@@ -50,6 +53,7 @@ class TripletTrainerMxnet(TrainerBase):
         def transform(data_, label_):
             return data_.astype(np.float32), label_.astype(np.float32)
 
+        print('[INFO] 数据处理中...')
         train_data = DataLoader(
             TripletDataLoader(rd=x_train, rl=y_train, transform=transform),
             self.config.batch_size, shuffle=True)
@@ -57,6 +61,7 @@ class TripletTrainerMxnet(TrainerBase):
         test_data = DataLoader(
             TripletDataLoader(rd=x_test, rl=y_test, transform=transform),
             self.config.batch_size, shuffle=True)
+        print('[INFO] 数据处理完成')
 
         for epoch in range(self.config.num_epochs):
             for i, (data, _) in enumerate(train_data):
@@ -74,6 +79,7 @@ class TripletTrainerMxnet(TrainerBase):
                 trainer_triplet.step(self.config.batch_size)
                 curr_loss = mx.nd.mean(loss).asscalar()
                 print("[INFO] epoch: %s, loss: %s" % (epoch, curr_loss))
+
             dist_acc = self.evaluate_net(self.model, test_data)  # 评估epoch的性能
             self.model.save_params(
                 os.path.join(ROOT_DIR, 'experiments/music_tl_v2/checkpoints', "triplet_loss_model_%s_%s.params" %
@@ -141,7 +147,7 @@ class TripletDataLoader(dataset.Dataset):
     def _get_data(self):
         label_list = np.unique(self.__rl)
         digit_indices = [np.where(self.__rl == i)[0] for i in label_list]
-        tl_pairs = self.create_pairs(self.__rd, digit_indices, len(label_list))
+        tl_pairs = self.create_pairs_v2(self.__rd, digit_indices, len(label_list))
         self._data = tl_pairs
         self._label = mx.nd.ones(tl_pairs.shape[0])
 
