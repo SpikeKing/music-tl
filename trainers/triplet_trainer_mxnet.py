@@ -148,8 +148,9 @@ class TripletDataLoader(dataset.Dataset):
         label_list = np.unique(self.__rl)
         digit_indices = [np.where(self.__rl == i)[0] for i in label_list]
         tl_pairs = self.create_pairs_v2(self.__rd, digit_indices, len(label_list))
+        print('[INFO] 完成Triplet数据处理! ')
         self._data = tl_pairs
-        self._label = mx.nd.ones(tl_pairs.shape[0])
+        self._label = np.ones(tl_pairs.shape[0])
 
     @staticmethod
     def create_pairs(x, digit_indices, num_classes):
@@ -162,7 +163,7 @@ class TripletDataLoader(dataset.Dataset):
                 dn = (d + inc) % num_classes
                 z3 = digit_indices[dn][i]
                 pairs += [[x[z1], x[z2], x[z3]]]
-        return mx.nd.array(np.asarray(pairs))
+        return np.asarray(pairs)
 
     @staticmethod
     def create_pairs_v2(x, digit_indices, num_classes, clz_samples=21, n_loop=1):
@@ -185,4 +186,4 @@ class TripletDataLoader(dataset.Dataset):
                             break
                     z3 = digit_indices[dn][i]
                     pairs += [[x[z1], x[z2], x[z3]]]
-        return mx.nd.array(np.asarray(pairs))
+        return np.asarray(pairs)
