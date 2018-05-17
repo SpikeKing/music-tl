@@ -80,7 +80,7 @@ class TripletTrainerMxnet(TrainerBase):
                 curr_loss = mx.nd.mean(loss).asscalar()
                 print("[INFO] epoch: %s, loss: %s" % (epoch, curr_loss))
 
-            dist_acc = self.evaluate_net(self.model, test_data)  # 评估epoch的性能
+            dist_acc = self.evaluate_net(self.model, test_data, ctx)  # 评估epoch的性能
             self.model.save_params(
                 os.path.join(ROOT_DIR, 'experiments/music_tl_v2/checkpoints', "triplet_loss_model_%s_%s.params" %
                              (epoch, '%0.4f' % dist_acc)))  # 存储模型
@@ -104,12 +104,14 @@ class TripletTrainerMxnet(TrainerBase):
         self.evaluate_net(self.model, test_data)  # 评估epoch的性能
 
     @staticmethod
-    def evaluate_net(model, data):
+    def evaluate_net(model, test_data, ctx):
         triplet_loss = gluon.loss.TripletLoss(margin=0)
         sum_correct = 0
         sum_all = 0
         rate = 0.0
-        for i, (data, _) in enumerate(data):
+        for i, (data, _) in enumerate(test_data):
+            data = data.as_in_context(ctx)
+            
             anc_ins, pos_ins, neg_ins = data[:, 0], data[:, 1], data[:, 2]
             inter1 = model(anc_ins)  # 训练的时候组合
             inter2 = model(pos_ins)
