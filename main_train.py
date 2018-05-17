@@ -10,11 +10,9 @@ https://stackoverflow.com/questions/48340392/futurewarning-conversion-of-the-sec
 """
 
 from data_loaders.triplet_dl import TripletDL
-from infers.triplet_infer import TripletInfer
-from models.triplet_model import TripletModel
-from trainers.triplet_trainer import TripletTrainer
-from utils.config_utils import process_config, get_train_args
-import numpy as np
+from models.triplet_model_mxnet import TripletModelMxnet
+from trainers.triplet_trainer_mxnet import TripletTrainerMxnet
+from utils.config_utils import process_config
 
 
 def main_train():
@@ -43,10 +41,10 @@ def main_train():
     dl = TripletDL(config=config)
 
     print '[INFO] 构造网络...'
-    model = TripletModel(config=config)
+    model = TripletModelMxnet(config=config)
 
     print '[INFO] 训练网络...'
-    trainer = TripletTrainer(
+    trainer = TripletTrainerMxnet(
         model=model.model,
         data=[dl.get_train_data(), dl.get_test_data()],
         config=config)
