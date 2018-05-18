@@ -28,6 +28,7 @@ from utils.utils import sort_two_list
 class DistanceApi(object):
     def __init__(self):
         self.b_list, self.l_list, self.n_list = self.load_data()
+        self.model = None
         pass
 
     @staticmethod
@@ -62,10 +63,12 @@ class DistanceApi(object):
         sb_list, sn_list = sort_two_list(list(b_list_dist), list(self.n_list))
         return sb_list[0:20], sn_list[0:20]
 
-    def distance_for_mp3(self, mp3_path):
-        model_path = os.path.join(ROOT_DIR, "experiments/music_tl_v2/checkpoints", "triplet_loss_model_35_0.9955.h5")
-        model = load_model(model_path, custom_objects={'triplet_loss': TripletModel.triplet_loss})
+    def init_mode(self):
+        model_path = os.path.join(ROOT_DIR, "experiments/music_tl_v2_final_k/checkpoints",
+                                  "triplet_loss_model_35_0.9955.h5")
+        self.model = load_model(model_path, custom_objects={'triplet_loss': TripletModel.triplet_loss})
 
+    def distance_for_mp3(self, mp3_path):
         # features = np.load('./993238670.npy')
         start_time = datetime.now()  # 起始时间
         y_o, sr = librosa.load(mp3_path)
@@ -88,7 +91,7 @@ class DistanceApi(object):
             'neg_input': np.zeros(features.shape)
         }
 
-        res = model.predict(X)
+        res = self.model.predict(X)
         data_prop = np.squeeze(res[:, :O_DIM])
         oz_arr = np.where(data_prop >= 0.0, 1.0, 0.0).astype(int)
         input_b = self.to_binary(oz_arr)
@@ -133,8 +136,9 @@ def test_of_distance():
 
 
 def test_of_mp3():
-    mp3_path = os.path.join(ROOT_DIR, 'experiments/raw_data/train', '993238670_18.20.mp3')
+    mp3_path = os.path.join(ROOT_DIR, 'experiments/raw_data/train', '993001815_15.07.mp3')
     da = DistanceApi()
+    da.init_mode()
     print('[INFO] 目标音频: %s' % mp3_path)
     rb_list, rn_list = da.distance_for_mp3(mp3_path)
     print('[INFO] 距离: %s' % rb_list)
@@ -142,5 +146,5 @@ def test_of_mp3():
 
 
 if __name__ == '__main__':
-    test_of_distance()
+    # test_of_distance()
     test_of_mp3()

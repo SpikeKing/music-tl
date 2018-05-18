@@ -55,11 +55,11 @@ class TripletTrainerMxnet(TrainerBase):
 
         print('[INFO] 数据处理中...')
         train_data = DataLoader(
-            TripletDataLoader(rd=x_train, rl=y_train, transform=transform),
+            TripletDataset(rd=x_train, rl=y_train, transform=transform),
             self.config.batch_size, shuffle=True)
 
         test_data = DataLoader(
-            TripletDataLoader(rd=x_test, rl=y_test, transform=transform),
+            TripletDataset(rd=x_test, rl=y_test, transform=transform),
             self.config.batch_size, shuffle=True)
         print('[INFO] 数据处理完成')
 
@@ -99,7 +99,7 @@ class TripletTrainerMxnet(TrainerBase):
             return data_.astype(np.float32), label_.astype(np.float32)
 
         test_data = DataLoader(
-            TripletDataLoader(rd=x_test, rl=y_test, transform=transform),
+            TripletDataset(rd=x_test, rl=y_test, transform=transform),
             self.config.batch_size, shuffle=True)
         self.evaluate_net(self.model, test_data)  # 评估epoch的性能
 
@@ -129,7 +129,7 @@ class TripletTrainerMxnet(TrainerBase):
         return rate
 
 
-class TripletDataLoader(dataset.Dataset):
+class TripletDataset(dataset.Dataset):
     def __init__(self, rd, rl, transform=None):
         self.__rd = rd  # 原始数据
         self.__rl = rl  # 原始标签
