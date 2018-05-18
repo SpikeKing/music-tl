@@ -111,7 +111,7 @@ class TripletTrainerMxnet(TrainerBase):
         rate = 0.0
         for i, (data, _) in enumerate(test_data):
             data = data.as_in_context(ctx)
-            
+
             anc_ins, pos_ins, neg_ins = data[:, 0], data[:, 1], data[:, 2]
             inter1 = model(anc_ins)  # 训练的时候组合
             inter2 = model(pos_ins)

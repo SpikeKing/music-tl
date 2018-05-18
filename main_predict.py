@@ -10,6 +10,7 @@ import sys
 import numpy as np
 
 from hash.distance_api import DistanceApi
+from utils.utils import sort_two_list
 
 
 def main_predict():
@@ -35,8 +36,12 @@ def main_predict():
         da = DistanceApi()
         rb_list, rn_list = da.distance(audio_name)
         rn_list = [x.replace('.npy', '') for x in list(np.squeeze(rn_list))]
-        print('[INFO] 距离: %s' % rb_list)
-        print('[INFO] 相似: %s' % rn_list)
+        # print('[INFO] 距离: %s' % rb_list)
+        # print('[INFO] 相似: %s' % rn_list)
+        rb_list, rn_list = sort_two_list(rb_list, rn_list)
+        print '[INFO]',
+        for rb, rn in zip(rb_list, rn_list):
+            print '%s-%s ' % (rb, rn),
 
     mp3_path = args.mp3
     if mp3_path:
@@ -44,8 +49,13 @@ def main_predict():
         da = DistanceApi()
         rb_list, rn_list = da.distance_for_mp3(mp3_path)
         rn_list = [x.replace('.npy', '') for x in list(np.squeeze(rn_list))]
-        print('[INFO] 距离: %s' % rb_list)
-        print('[INFO] 相似: %s' % rn_list)
+
+        rb_list, rn_list = sort_two_list(rb_list, rn_list)
+        print '[INFO]',
+        for rb, rn in zip(rb_list, rn_list):
+            print '%s-%s ' % (rb, rn),
+        # print('[INFO] 距离: %s' % rb_list)
+        # print('[INFO] 相似: %s' % rn_list)
 
 
 if __name__ == '__main__':
