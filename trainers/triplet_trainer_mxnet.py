@@ -69,10 +69,10 @@ class TripletTrainerMxnet(TrainerBase):
                 anc_ins, pos_ins, neg_ins = data[:, 0], data[:, 1], data[:, 2]
 
                 with autograd.record():
-                    inter1 = self.model(anc_ins)  # 训练的时候组合
-                    inter2 = self.model(pos_ins)
-                    inter3 = self.model(neg_ins)
-                    loss = triplet_loss(inter1, inter2, inter3)  # 交叉熵
+                    inter1 = self.model(anc_ins)[:, 63]  # 训练的时候组合
+                    inter2 = self.model(pos_ins)[:, 63]
+                    inter3 = self.model(neg_ins)[:, 63]
+                    loss = triplet_loss(inter1, inter2, inter3)  # TripletLoss
                     loss.backward()
 
                 trainer_triplet.step(self.config.batch_size)

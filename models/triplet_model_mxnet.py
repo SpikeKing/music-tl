@@ -56,6 +56,4 @@ class TripletModelMxnet(ModelBase):
             net_triplet.add(LSTM(hidden_size=O_DIM, bidirectional=True))
             net_triplet.add(LSTM(hidden_size=O_DIM))
 
-            net_triplet.add(Dense(units=O_DIM))
-
         return net_triplet

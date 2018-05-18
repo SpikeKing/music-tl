@@ -28,7 +28,7 @@ class HashPreProcessor(object):
         print('[INFO] 转换开始')
         ctx = mx.cpu(0)
         self.model = TripletModelMxnet.deep_conv_lstm()
-        params = os.path.join(ROOT_DIR, "experiments/music_tl_v2/checkpoints", "triplet_loss_model_3_0.7750.params")
+        params = os.path.join(ROOT_DIR, "experiments/music_tl_v2/checkpoints", "triplet_loss_model_41_0.8750.params")
         self.model.load_params(params, ctx=ctx)
 
         file_name = 'data_train_v2.npz'
@@ -73,6 +73,7 @@ class HashPreProcessor(object):
         X_test = mx.nd.array(X_test).as_in_context(ctx)
         print('[INFO] 输入结构: %s' % str(X_test.shape))
         res = self.model(X_test)
+        res = res[:, 63]
         print('[INFO] 输出结构: %s' % str(res.shape))
         data = res.asnumpy()
         oz_arr = np.where(data >= 0.0, 1.0, 0.0).astype(int)
