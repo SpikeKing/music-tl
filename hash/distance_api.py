@@ -136,7 +136,7 @@ def test_of_distance():
 
 
 def test_of_mp3():
-    mp3_path = os.path.join(ROOT_DIR, 'experiments/raw_data/train', '993001815_15.07.mp3')
+    mp3_path = os.path.join(ROOT_DIR, 'experiments/raw_data/train', '993001815_15.05.mp3')
     da = DistanceApi()
     da.init_mode()
     print('[INFO] 目标音频: %s' % mp3_path)
