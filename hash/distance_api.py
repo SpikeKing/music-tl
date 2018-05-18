@@ -76,9 +76,6 @@ class DistanceApi(object):
         features = get_feature(y, sr)
         features = np.reshape(features, (1, 32, 256))
         features = np.transpose(features, [0, 2, 1])
-        elapsed_time = (datetime.now() - start_time).total_seconds()
-        tps = float(1.0) / float(elapsed_time)
-        print "Time: %s s, TPS: %0.0f (%s ms)" % (elapsed_time, tps, (1 / tps * 1000))
 
         # file_name = 'data_test.npz'
         # data_path = os.path.join(ROOT_DIR, 'experiments', file_name)
@@ -95,6 +92,10 @@ class DistanceApi(object):
         data_prop = np.squeeze(res[:, :O_DIM])
         oz_arr = np.where(data_prop >= 0.0, 1.0, 0.0).astype(int)
         input_b = self.to_binary(oz_arr)
+
+        elapsed_time = (datetime.now() - start_time).total_seconds()
+        tps = float(1.0) / float(elapsed_time)
+        print "Time: %s s, TPS: %0.0f (%s ms)" % (elapsed_time, tps, (1 / tps * 1000))
 
         print bin(input_b)
 
@@ -140,7 +141,8 @@ def test_of_mp3():
     da = DistanceApi()
     da.init_mode()
     print('[INFO] 目标音频: %s' % mp3_path)
-    rb_list, rn_list = da.distance_for_mp3(mp3_path)
+    for i in range(10):
+        rb_list, rn_list = da.distance_for_mp3(mp3_path)
     print('[INFO] 距离: %s' % rb_list)
     print('[INFO] 相似: %s' % rn_list)
 
