@@ -3,8 +3,7 @@
 Copyright (c) 2018. All rights reserved.
 Created by C. L. Wang on 2018/4/18
 """
-from mxnet.gluon.nn import Sequential, Conv1D, BatchNorm, MaxPool1D, Dropout, HybridSequential
-import mxnet as mx
+from mxnet.gluon.nn import Sequential, Conv1D, BatchNorm, MaxPool1D, Dropout, Dense
 from mxnet.gluon.rnn import LSTM
 
 from bases.model_base import ModelBase
@@ -56,5 +55,7 @@ class TripletModelMxnet(ModelBase):
             net_triplet.add(LSTM(hidden_size=O_DIM, bidirectional=True))
             net_triplet.add(LSTM(hidden_size=O_DIM, bidirectional=True))
             net_triplet.add(LSTM(hidden_size=O_DIM))
+
+            net_triplet.add(Dense(units=O_DIM))
 
         return net_triplet

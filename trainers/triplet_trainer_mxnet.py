@@ -72,7 +72,6 @@ class TripletTrainerMxnet(TrainerBase):
                     inter1 = self.model(anc_ins)  # 训练的时候组合
                     inter2 = self.model(pos_ins)
                     inter3 = self.model(neg_ins)
-
                     loss = triplet_loss(inter1, inter2, inter3)  # 交叉熵
                     loss.backward()
 
@@ -88,7 +87,7 @@ class TripletTrainerMxnet(TrainerBase):
     def test(self):
         ctx = mx.cpu()
         self.model.load_params(
-            os.path.join(ROOT_DIR, 'experiments/music_tl_v2/checkpoints', 'triplet_loss_model_11_0.9750.params'),
+            os.path.join(ROOT_DIR, 'experiments/music_tl_v2/checkpoints', 'triplet_loss_model_11_1.0000.params'),
             ctx=ctx)
 
         # 测试不使用全量数据
@@ -101,7 +100,7 @@ class TripletTrainerMxnet(TrainerBase):
         test_data = DataLoader(
             TripletDataset(rd=x_test, rl=y_test, transform=transform),
             self.config.batch_size, shuffle=True)
-        self.evaluate_net(self.model, test_data)  # 评估epoch的性能
+        self.evaluate_net(self.model, test_data, ctx=ctx)  # 评估epoch的性能
 
     @staticmethod
     def evaluate_net(model, test_data, ctx):
