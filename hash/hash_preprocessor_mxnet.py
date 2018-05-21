@@ -59,13 +59,13 @@ class HashPreProcessor(object):
             return len(name.split('.'))  # 长度为2的音频是原始音频
 
         # 获取原始音频的索引
-        n_list_r = np.reshape(n_list, (-1, 1))
-        n_list_num = np.apply_along_axis(split_num, axis=1, arr=n_list_r)
-        o_indexes = np.where(n_list_num == 2, True, False)  # 原始音频的索引
-
-        n_list = n_list[o_indexes]
-        l_list = l_list[o_indexes]
-        X_test = X_test[o_indexes]
+        # n_list_r = np.reshape(n_list, (-1, 1))
+        # n_list_num = np.apply_along_axis(split_num, axis=1, arr=n_list_r)
+        # o_indexes = np.where(n_list_num == 2, True, False)  # 原始音频的索引
+        #
+        # n_list = n_list[o_indexes]
+        # l_list = l_list[o_indexes]
+        # X_test = X_test[o_indexes]
 
         print('[INFO] 转换数量: %s' % n_list.shape[0])
 
