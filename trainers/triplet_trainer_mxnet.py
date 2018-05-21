@@ -6,6 +6,7 @@ Created by C. L. Wang on 2018/4/18
 import os
 import random
 
+import gc
 import mxnet as mx
 import numpy as np
 from mxnet import gluon, autograd
@@ -51,9 +52,13 @@ class TripletTrainerMxnet(TrainerBase):
         def transform(data_, label_):
             return data_.astype(np.float32), label_.astype(np.float32)
 
+        train_data = None
+        test_data = None
+
         for epoch in range(self.config.num_epochs):
-            train_data = None
-            test_data = None
+            del train_data
+            del test_data
+            gc.collect()
             print('[INFO] 数据处理中...')
             train_data = DataLoader(
                 TripletDataset(rd=x_train, rl=y_train, transform=transform),
