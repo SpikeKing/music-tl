@@ -72,8 +72,7 @@ class HashPreProcessor(object):
         X_test = np.transpose(X_test, [0, 2, 1])
         X_test = mx.nd.array(X_test).as_in_context(ctx)
         print('[INFO] 输入结构: %s' % str(X_test.shape))
-        res = self.model(X_test)
-        res = res[:, 63]
+        res = self.model(X_test)[:, 63]
         print('[INFO] 输出结构: %s' % str(res.shape))
         data = res.asnumpy()
         oz_arr = np.where(data >= 0.0, 1.0, 0.0).astype(int)
