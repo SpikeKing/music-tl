@@ -82,7 +82,6 @@ class DistanceApi(object):
         features = mx.nd.array(features).as_in_context(ctx)
         print('[INFO] 输入结构: %s' % str(features.shape))
         res = self.model(features)
-        res = res[:, 63][0]
         print('[INFO] 输出结构: %s' % str(res.shape))
         data_prop = res.asnumpy()
         oz_arr = np.where(data_prop >= 0.0, 1.0, 0.0).astype(int)

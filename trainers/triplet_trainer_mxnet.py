@@ -46,7 +46,7 @@ class TripletTrainerMxnet(TrainerBase):
     def train_core(self, x_train, y_train, x_test, y_test):
         ctx = mx.gpu()
         self.model.collect_params().initialize(mx.init.Uniform(scale=0.1), ctx=ctx)
-        triplet_loss = gluon.loss.TripletLoss(margin=40)
+        triplet_loss = gluon.loss.TripletLoss(margin=10)
         trainer_triplet = gluon.Trainer(self.model.collect_params(), 'adam')
 
         def transform(data_, label_):
@@ -75,9 +75,9 @@ class TripletTrainerMxnet(TrainerBase):
                 anc_ins, pos_ins, neg_ins = data[:, 0], data[:, 1], data[:, 2]
 
                 with autograd.record():
-                    inter1 = self.model(anc_ins)[:, 63]  # 训练的时候组合
-                    inter2 = self.model(pos_ins)[:, 63]
-                    inter3 = self.model(neg_ins)[:, 63]
+                    inter1 = self.model(anc_ins)
+                    inter2 = self.model(pos_ins)
+                    inter3 = self.model(neg_ins)
                     loss = triplet_loss(inter1, inter2, inter3)  # TripletLoss
                     loss.backward()
 
@@ -118,9 +118,9 @@ class TripletTrainerMxnet(TrainerBase):
             data = data.as_in_context(ctx)
 
             anc_ins, pos_ins, neg_ins = data[:, 0], data[:, 1], data[:, 2]
-            inter1 = model(anc_ins)[:, 63]  # 训练的时候组合
-            inter2 = model(pos_ins)[:, 63]
-            inter3 = model(neg_ins)[:, 63]
+            inter1 = model(anc_ins)
+            inter2 = model(pos_ins)
+            inter3 = model(neg_ins)
             loss = triplet_loss(inter1, inter2, inter3)  # 交叉熵
 
             loss = loss.asnumpy()
