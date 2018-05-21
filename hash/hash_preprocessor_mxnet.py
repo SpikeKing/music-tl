@@ -40,17 +40,21 @@ class HashPreProcessor(object):
 
         print('[INFO] X_test1.shape: ' + str(X_test1.shape))
 
-        file_name = 'data_test_v2.npz'
-        data_path = os.path.join(ROOT_DIR, 'experiments', file_name)
-        data_all = np.load(data_path)
-        X_test2 = data_all['f_list']
-        l_list2 = data_all['l_list']
-        n_list2 = data_all['n_list']
-        print('[INFO] X_test2.shape: ' + str(X_test2.shape))
+        X_test = X_test1
+        l_list = l_list1
+        n_list = n_list1
 
-        X_test = np.concatenate((X_test1, X_test2), axis=0)
-        l_list = np.concatenate((l_list1, l_list2), axis=0)
-        n_list = np.concatenate((n_list1, n_list2), axis=0)
+        # file_name = 'data_test_v2.npz'
+        # data_path = os.path.join(ROOT_DIR, 'experiments', file_name)
+        # data_all = np.load(data_path)
+        # X_test2 = data_all['f_list']
+        # l_list2 = data_all['l_list']
+        # n_list2 = data_all['n_list']
+        # print('[INFO] X_test2.shape: ' + str(X_test2.shape))
+
+        # X_test = np.concatenate((X_test1, X_test2), axis=0)
+        # l_list = np.concatenate((l_list1, l_list2), axis=0)
+        # n_list = np.concatenate((n_list1, n_list2), axis=0)
 
         print('[INFO] X_test.shape: ' + str(X_test.shape))
 
