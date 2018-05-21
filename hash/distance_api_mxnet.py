@@ -124,6 +124,7 @@ class DistanceApi(object):
 
 def test_of_distance():
     da = DistanceApi()
+    print(da.n_list)
     audio_name = '946497047'
     print('[INFO] 目标音频: %s' % audio_name)
     rb_list, rn_list = da.distance(audio_name)
