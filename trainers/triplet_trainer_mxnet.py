@@ -52,7 +52,8 @@ class TripletTrainerMxnet(TrainerBase):
             return data_.astype(np.float32), label_.astype(np.float32)
 
         for epoch in range(self.config.num_epochs):
-
+            train_data = None
+            test_data = None
             print('[INFO] 数据处理中...')
             train_data = DataLoader(
                 TripletDataset(rd=x_train, rl=y_train, transform=transform),
