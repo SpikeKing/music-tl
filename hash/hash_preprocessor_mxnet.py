@@ -27,7 +27,7 @@ class HashPreProcessor(object):
         print('[INFO] 转换开始')
         ctx = mx.gpu(1)
         self.model = TripletModelMxnet.deep_conv_lstm()
-        params = os.path.join(ROOT_DIR, "experiments/music_tl_v2/checkpoints", "triplet_loss_model_3_0.9956.params")
+        params = os.path.join(ROOT_DIR, "experiments/music_tl_v2/checkpoints", "triplet_loss_model_2_0.9997.params")
         print('[INFO] 模型: %s' % params)
         self.model.load_params(params, ctx=ctx)
 
@@ -40,9 +40,9 @@ class HashPreProcessor(object):
 
         print('[INFO] X_test1.shape: ' + str(X_test1.shape))
 
-        X_test = X_test1[:10000]
-        l_list = l_list1[:10000]
-        n_list = n_list1[:10000]
+        X_test = X_test1
+        l_list = l_list1
+        n_list = n_list1
 
         # file_name = 'data_test_v2.npz'
         # data_path = os.path.join(ROOT_DIR, 'experiments', file_name)
