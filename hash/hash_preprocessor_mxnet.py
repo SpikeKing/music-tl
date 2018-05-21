@@ -31,14 +31,14 @@ class HashPreProcessor(object):
         print('[INFO] 模型: %s' % params)
         self.model.load_params(params, ctx=ctx)
 
-        file_name = 'data_train_v2.npz'
-        data_path = os.path.join(ROOT_DIR, 'experiments', file_name)
-        data_all = np.load(data_path)
-        X_test1 = data_all['f_list']
-        l_list1 = data_all['l_list']
-        n_list1 = data_all['n_list']
-
-        print('[INFO] X_test1.shape: ' + str(X_test1.shape))
+        # file_name = 'data_train_v2.npz'
+        # data_path = os.path.join(ROOT_DIR, 'experiments', file_name)
+        # data_all = np.load(data_path)
+        # X_test1 = data_all['f_list']
+        # l_list1 = data_all['l_list']
+        # n_list1 = data_all['n_list']
+        #
+        # print('[INFO] X_test1.shape: ' + str(X_test1.shape))
 
         file_name = 'data_test_v2.npz'
         data_path = os.path.join(ROOT_DIR, 'experiments', file_name)
@@ -48,11 +48,15 @@ class HashPreProcessor(object):
         n_list2 = data_all['n_list']
         print('[INFO] X_test2.shape: ' + str(X_test2.shape))
 
-        X_test = np.concatenate((X_test1, X_test2), axis=0)
-        l_list = np.concatenate((l_list1, l_list2), axis=0)
-        n_list = np.concatenate((n_list1, n_list2), axis=0)
+        X_test = X_test2
+        l_list = l_list2
+        n_list = n_list2
 
-        print('[INFO] X_test.shape: ' + str(X_test.shape))
+        # X_test = np.concatenate((X_test1, X_test2), axis=0)
+        # l_list = np.concatenate((l_list1, l_list2), axis=0)
+        # n_list = np.concatenate((n_list1, n_list2), axis=0)
+
+        # print('[INFO] X_test.shape: ' + str(X_test.shape))
 
         def split_num(name):
             name = str(name)
