@@ -51,17 +51,19 @@ class TripletTrainerMxnet(TrainerBase):
         def transform(data_, label_):
             return data_.astype(np.float32), label_.astype(np.float32)
 
-        print('[INFO] 数据处理中...')
-        train_data = DataLoader(
-            TripletDataset(rd=x_train, rl=y_train, transform=transform),
-            self.config.batch_size, shuffle=True)
-
-        test_data = DataLoader(
-            TripletDataset(rd=x_test, rl=y_test, transform=transform),
-            self.config.batch_size, shuffle=True)
-        print('[INFO] 数据处理完成')
-
         for epoch in range(self.config.num_epochs):
+
+            print('[INFO] 数据处理中...')
+            train_data = DataLoader(
+                TripletDataset(rd=x_train, rl=y_train, transform=transform),
+                self.config.batch_size, shuffle=True)
+
+            test_data = DataLoader(
+                TripletDataset(rd=x_test, rl=y_test, transform=transform),
+                self.config.batch_size, shuffle=True)
+
+            print('[INFO] 数据处理完成')
+
             for i, (data, _) in enumerate(train_data):
                 data = data.as_in_context(ctx)
                 anc_ins, pos_ins, neg_ins = data[:, 0], data[:, 1], data[:, 2]
