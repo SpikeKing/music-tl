@@ -75,11 +75,10 @@ class HashPreProcessor(object):
         print('[INFO] 转换数量: %s' % n_list.shape[0])
         X_test = np.transpose(X_test, [0, 2, 1])
         for index in range(0, X_test.shape[0], 10000):
-            x_test = X_test[index: index + 10000]
-
-            x_test = mx.nd.array(x_test).as_in_context(ctx)
-            print('[INFO] 输入结构: %s' % str(x_test.shape))
-            res = self.model(x_test)[:, 63]
+            test = X_test[index: index + 10000]
+            test = mx.nd.array(test).as_in_context(ctx)
+            print('[INFO] 输入结构: %s' % str(test.shape))
+            res = self.model(test)[:, 63]
             print('[INFO] 输出结构: %s' % str(res.shape))
             data = res.asnumpy()
             oz_arr = np.where(data >= 0.0, 1.0, 0.0).astype(int)
@@ -94,7 +93,7 @@ class HashPreProcessor(object):
         out_path = os.path.join(ROOT_DIR, 'experiments', file_name.replace('.npz', '') + ".bin.mx.npz")
         np.savez(out_path, b_list=oz_bin_all, l_list=l_list, n_list=n_list)
 
-        print('[INFO] 输出示例: %s %s %s' % (str(oz_bin_all.shape), bin(oz_bin[0]), oz_bin[0]))
+        print('[INFO] 输出示例: %s %s %s' % (str(oz_bin_all.shape), bin(oz_bin_all[0]), oz_bin_all[0]))
         print('[INFO] 转换结束')
 
     @staticmethod
