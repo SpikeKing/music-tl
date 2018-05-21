@@ -104,7 +104,6 @@ def audio_noise(y, sr, name_id, folder):
     """
     音频噪声，添加高斯噪声，噪声分为三种，添加1%，2%，3%
     """
-    np.random.seed(seed=47)
     wn = np.random.randn(len(y))
 
     yn2 = np.where(y != 0.0, y + 0.02 * wn, 0.0)
