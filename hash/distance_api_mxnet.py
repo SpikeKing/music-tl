@@ -31,7 +31,7 @@ class DistanceApi(object):
 
     @staticmethod
     def load_data():
-        file_name = 'data_test_v2.bin.mx.npz'
+        file_name = 'data_v2.bin.mx.npz'
         print('模型名称: %s' % file_name)
         data_path = os.path.join(ROOT_DIR, 'experiments', file_name)
         data_all = np.load(data_path)
