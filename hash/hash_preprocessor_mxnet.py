@@ -27,7 +27,7 @@ class HashPreProcessor(object):
         print('[INFO] 转换开始')
         ctx = mx.gpu(1)
         self.model = TripletModelMxnet.deep_conv_lstm()
-        params = os.path.join(ROOT_DIR, "experiments/music_tl_v2/checkpoints", "triplet_loss_model_2_0.9997.params")
+        params = os.path.join(ROOT_DIR, "experiments/music_tl_v2/checkpoints", "triplet_loss_model_0_0.9982.params")
         print('[INFO] 模型: %s' % params)
         self.model.load_params(params, ctx=ctx)
 
@@ -58,18 +58,18 @@ class HashPreProcessor(object):
 
         # print('[INFO] X_test.shape: ' + str(X_test.shape))
 
-        # def split_num(name):
-        #     name = str(name)
-        #     return len(name.split('.'))  # 长度为2的音频是原始音频
-        #
-        # # 获取原始音频的索引
-        # n_list_r = np.reshape(n_list, (-1, 1))
-        # n_list_num = np.apply_along_axis(split_num, axis=1, arr=n_list_r)
-        # o_indexes = np.where(n_list_num == 2, True, False)  # 原始音频的索引
-        #
-        # n_list = n_list[o_indexes]
-        # l_list = l_list[o_indexes]
-        # X_test = X_test[o_indexes]
+        def split_num(name):
+            name = str(name)
+            return len(name.split('.'))  # 长度为2的音频是原始音频
+
+        # 获取原始音频的索引
+        n_list_r = np.reshape(n_list, (-1, 1))
+        n_list_num = np.apply_along_axis(split_num, axis=1, arr=n_list_r)
+        o_indexes = np.where(n_list_num == 2, True, False)  # 原始音频的索引
+
+        n_list = n_list[o_indexes]
+        l_list = l_list[o_indexes]
+        X_test = X_test[o_indexes]
 
         oz_bin_all = np.array([])
         print('[INFO] 转换数量: %s' % n_list.shape[0])
