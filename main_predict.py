@@ -9,7 +9,8 @@ import argparse
 import sys
 import numpy as np
 
-from hash.distance_api import DistanceApi
+# from hash.distance_api import DistanceApi
+from hash.distance_api_mxnet import DistanceApi
 from utils.utils import sort_two_list
 
 
