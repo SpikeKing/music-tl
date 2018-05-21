@@ -25,7 +25,7 @@ class HashPreProcessor(object):
 
     def process(self):
         print('[INFO] 转换开始')
-        ctx = mx.gpu(0)
+        ctx = mx.cpu(0)
         self.model = TripletModelMxnet.deep_conv_lstm()
         params = os.path.join(ROOT_DIR, "experiments/music_tl_v2/checkpoints", "triplet_loss_model_15_1.0000.params")
         print('[INFO] 模型: %s' % params)
@@ -48,9 +48,9 @@ class HashPreProcessor(object):
         n_list2 = data_all['n_list']
         print('[INFO] X_test2.shape: ' + str(X_test2.shape))
 
-        X_test = X_test2[:10000]
-        l_list = l_list2[:10000]
-        n_list = n_list2[:10000]
+        X_test = X_test2
+        l_list = l_list2
+        n_list = n_list2
 
         # X_test = np.concatenate((X_test1, X_test2), axis=0)
         # l_list = np.concatenate((l_list1, l_list2), axis=0)
@@ -71,24 +71,30 @@ class HashPreProcessor(object):
         # l_list = l_list[o_indexes]
         # X_test = X_test[o_indexes]
 
+        oz_bin_all = np.array([])
         print('[INFO] 转换数量: %s' % n_list.shape[0])
-
         X_test = np.transpose(X_test, [0, 2, 1])
-        X_test = mx.nd.array(X_test).as_in_context(ctx)
-        print('[INFO] 输入结构: %s' % str(X_test.shape))
-        res = self.model(X_test)[:, 63]
-        print('[INFO] 输出结构: %s' % str(res.shape))
-        data = res.asnumpy()
-        oz_arr = np.where(data >= 0.0, 1.0, 0.0).astype(int)
-        print oz_arr[0]
-        # print np.sum(oz_arr, axis=1)  # 测试分布
-        oz_bin = np.apply_along_axis(self.to_binary, axis=1, arr=oz_arr)
-        print('[INFO] oz_bin: %s' % oz_bin[0])
+        for index in range(0, X_test.shape[0], 10000):
+            x_test = X_test[index: index + 10000]
+
+            x_test = mx.nd.array(x_test).as_in_context(ctx)
+            print('[INFO] 输入结构: %s' % str(x_test.shape))
+            res = self.model(x_test)[:, 63]
+            print('[INFO] 输出结构: %s' % str(res.shape))
+            data = res.asnumpy()
+            oz_arr = np.where(data >= 0.0, 1.0, 0.0).astype(int)
+            print oz_arr[0]
+            # print np.sum(oz_arr, axis=1)  # 测试分布
+            oz_bin = np.apply_along_axis(self.to_binary, axis=1, arr=oz_arr)
+            print('[INFO] oz_bin: %s' % oz_bin[0])
+            oz_bin_all = np.concatenate((oz_bin_all, oz_bin), axis=0)
+            print('[INFO] oz_bin.shape: %s' % str(oz_bin.shape))
+            print('[INFO] oz_bin_all.shape: %s' % str(oz_bin_all.shape))
 
         out_path = os.path.join(ROOT_DIR, 'experiments', file_name.replace('.npz', '') + ".bin.mx.npz")
-        np.savez(out_path, b_list=oz_bin, l_list=l_list, n_list=n_list)
+        np.savez(out_path, b_list=oz_bin_all, l_list=l_list, n_list=n_list)
 
-        print('[INFO] 输出示例: %s %s %s' % (str(oz_bin.shape), bin(oz_bin[0]), oz_bin[0]))
+        print('[INFO] 输出示例: %s %s %s' % (str(oz_bin_all.shape), bin(oz_bin[0]), oz_bin[0]))
         print('[INFO] 转换结束')
 
     @staticmethod
