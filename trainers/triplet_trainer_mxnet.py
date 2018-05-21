@@ -112,9 +112,9 @@ class TripletTrainerMxnet(TrainerBase):
             data = data.as_in_context(ctx)
 
             anc_ins, pos_ins, neg_ins = data[:, 0], data[:, 1], data[:, 2]
-            inter1 = model(anc_ins)  # 训练的时候组合
-            inter2 = model(pos_ins)
-            inter3 = model(neg_ins)
+            inter1 = model(anc_ins)[:, 63]  # 训练的时候组合
+            inter2 = model(pos_ins)[:, 63]
+            inter3 = model(neg_ins)[:, 63]
             loss = triplet_loss(inter1, inter2, inter3)  # 交叉熵
 
             loss = loss.asnumpy()
