@@ -67,9 +67,9 @@ class HashPreProcessor(object):
         # l_list = l_list[o_indexes]
         # X_test = X_test[o_indexes]
 
-        n_list = n_list[:100000]
-        l_list = l_list[:100000]
-        X_test = X_test[:100000]
+        n_list = n_list[:10000]
+        l_list = l_list[:10000]
+        X_test = X_test[:10000]
 
         print('[INFO] 转换数量: %s' % n_list.shape[0])
 
