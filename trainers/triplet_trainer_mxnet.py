@@ -25,8 +25,6 @@ class TripletTrainerMxnet(TrainerBase):
         self.val_loss = []
         self.val_acc = []
 
-        random.seed(47)
-
     def init_callbacks(self):
         train_dir = os.path.join(ROOT_DIR, self.config.tb_dir, "train")
         mkdir_if_not_exist(train_dir)
@@ -176,7 +174,6 @@ class TripletDataset(dataset.Dataset):
                 print('[INFO] 去除样本类别: %s' % d)
                 continue
             for n_i in range(n_loop):  # 多次循环，多组数据
-                np.random.seed(17 * (n_i + 1))
                 for i in range(n):
                     np.random.shuffle(digit_indices[d])
                     z1, z2 = digit_indices[d][i], digit_indices[d][i + 1]
