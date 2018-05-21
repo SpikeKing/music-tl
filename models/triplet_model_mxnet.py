@@ -30,7 +30,7 @@ class TripletModelMxnet(ModelBase):
         共享模型deep_conv_lstm
         :return: 模型
         """
-        net_triplet = Sequential()
+        net_triplet = Sequential(prefix='net_')
 
         kernel_size = 1
         pool_size = 2
