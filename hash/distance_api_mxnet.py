@@ -62,14 +62,14 @@ class DistanceApi(object):
         return sb_list[0:20], sn_list[0:20]
 
     def init_mode(self):
-        ctx = mx.gpu(0)
+        ctx = mx.cpu(0)
         self.model = TripletModelMxnet.deep_conv_lstm()
         params = os.path.join(ROOT_DIR, "experiments/music_tl_v2/checkpoints", "triplet_loss_model_15_1.0000.params")
         print('[INFO] 模型: %s' % params)
         self.model.load_params(params, ctx=ctx)
 
     def distance_for_mp3(self, mp3_path):
-        ctx = mx.gpu(0)
+        ctx = mx.cpu(0)
         start_time = datetime.now()  # 起始时间
         input_b = None
         y_o, sr = librosa.load(mp3_path)
@@ -124,7 +124,7 @@ class DistanceApi(object):
 
 def test_of_distance():
     da = DistanceApi()
-    audio_name = '993001815'
+    audio_name = '967402084'
     print('[INFO] 目标音频: %s' % audio_name)
     rb_list, rn_list = da.distance(audio_name)
     print('[INFO] 距离: %s' % rb_list)
@@ -144,5 +144,5 @@ def test_of_mp3():
 
 if __name__ == '__main__':
     test_of_distance()
-    print('-' * 50)
-    test_of_mp3()
+    # print('-' * 50)
+    # test_of_mp3()
