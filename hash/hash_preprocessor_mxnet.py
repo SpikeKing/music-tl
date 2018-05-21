@@ -25,7 +25,7 @@ class HashPreProcessor(object):
 
     def process(self):
         print('[INFO] 转换开始')
-        ctx = mx.gpu(0)
+        ctx = mx.gpu(1)
         self.model = TripletModelMxnet.deep_conv_lstm()
         params = os.path.join(ROOT_DIR, "experiments/music_tl_v2/checkpoints", "triplet_loss_model_4_0.9948.params")
         print('[INFO] 模型: %s' % params)
