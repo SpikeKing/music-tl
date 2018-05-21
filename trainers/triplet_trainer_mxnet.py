@@ -60,6 +60,7 @@ class TripletTrainerMxnet(TrainerBase):
             del test_data
             gc.collect()
             print('[INFO] 数据处理中...')
+            random.seed(epoch * 47)
             train_data = DataLoader(
                 TripletDataset(rd=x_train, rl=y_train, transform=transform),
                 self.config.batch_size, shuffle=True)
