@@ -48,9 +48,9 @@ class HashPreProcessor(object):
         n_list2 = data_all['n_list']
         print('[INFO] X_test2.shape: ' + str(X_test2.shape))
 
-        X_test = X_test2
-        l_list = l_list2
-        n_list = n_list2
+        X_test = X_test2[:10000]
+        l_list = l_list2[:10000]
+        n_list = n_list2[:10000]
 
         # X_test = np.concatenate((X_test1, X_test2), axis=0)
         # l_list = np.concatenate((l_list1, l_list2), axis=0)
