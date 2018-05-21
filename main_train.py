@@ -48,7 +48,7 @@ def main_train():
         model=model.model,
         data=[dl.get_train_data(), dl.get_test_data()],
         config=config)
-    trainer.train()
+    trainer.test()
     print '[INFO] 训练完成...'
 
 
