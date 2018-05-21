@@ -62,20 +62,21 @@ class DistanceApi(object):
         return sb_list[0:20], sn_list[0:20]
 
     def init_mode(self):
-        ctx = mx.cpu(0)
+        ctx = mx.gpu(0)
         self.model = TripletModelMxnet.deep_conv_lstm()
         params = os.path.join(ROOT_DIR, "experiments/music_tl_v2/checkpoints", "triplet_loss_model_15_1.0000.params")
         print('[INFO] 模型: %s' % params)
         self.model.load_params(params, ctx=ctx)
 
     def distance_for_mp3(self, mp3_path):
-        # features = np.load('./993238670.npy')
-        ctx = mx.cpu(0)
+        ctx = mx.gpu(0)
         start_time = datetime.now()  # 起始时间
         input_b = None
         y_o, sr = librosa.load(mp3_path)
         y, _ = librosa.effects.trim(y_o, top_db=40)  # 去掉空白部分
         features = get_feature(y, sr)
+        # features = np.load('/Users/wang/workspace/music-tl/experiments/npy_data/train/992978262.npy')
+
         features = np.reshape(features, (1, 32, 256))
         features = np.transpose(features, [0, 2, 1])
         features = mx.nd.array(features).as_in_context(ctx)
