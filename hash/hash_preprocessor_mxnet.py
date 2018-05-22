@@ -30,7 +30,7 @@ class HashPreProcessor(object):
         self.model = gluon.nn.SymbolBlock(
             outputs=mx.sym.load_json(sym_json),
             inputs=mx.sym.var('data'))
-        params = os.path.join(ROOT_DIR, "experiments/music_tl_v2/checkpoints", "triplet_loss_model_6_0.9997.params")
+        params = os.path.join(ROOT_DIR, "experiments/music_tl_v2/checkpoints", "triplet_loss_model_2_0.9807.params")
         print('[INFO] 模型: %s' % params)
         self.model.load_params(params, ctx=ctx)
 

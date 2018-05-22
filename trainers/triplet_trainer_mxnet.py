@@ -160,18 +160,18 @@ class TripletDataset(dataset.Dataset):
         self._data = tl_pairs
         self._label = np.ones(tl_pairs.shape[0])
 
-    @staticmethod
-    def create_pairs(x, digit_indices, num_classes):
-        pairs = []
-        n = min([len(digit_indices[d]) for d in range(num_classes)]) - 1  # 最小类别数
-        for d in range(num_classes):
-            for i in range(n):
-                z1, z2 = digit_indices[d][i], digit_indices[d][i + 1]
-                inc = random.randrange(1, num_classes)
-                dn = (d + inc) % num_classes
-                z3 = digit_indices[dn][i]
-                pairs += [[x[z1], x[z2], x[z3]]]
-        return np.asarray(pairs)
+    # @staticmethod
+    # def create_pairs(x, digit_indices, num_classes):
+    #     pairs = []
+    #     n = min([len(digit_indices[d]) for d in range(num_classes)]) - 1  # 最小类别数
+    #     for d in range(num_classes):
+    #         for i in range(n):
+    #             z1, z2 = digit_indices[d][i], digit_indices[d][i + 1]
+    #             inc = random.randrange(1, num_classes)
+    #             dn = (d + inc) % num_classes
+    #             z3 = digit_indices[dn][i]
+    #             pairs += [[x[z1], x[z2], x[z3]]]
+    #     return np.asarray(pairs)
 
     @staticmethod
     def create_pairs_v2(x, digit_indices, num_classes, clz_samples=21, n_loop=1):

@@ -17,8 +17,6 @@ class TripletModelMxnet(ModelBase):
     TripletLoss模型
     """
 
-    MARGIN = 10.0  # 超参
-
     def __init__(self, config):
         super(TripletModelMxnet, self).__init__(config)
         self.build_model()
