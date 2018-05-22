@@ -21,7 +21,7 @@ from root_dir import ROOT_DIR
 
 
 def test_load_audio(mp3_path):
-    num = 1000
+    num = 100
 
     print('[统计开始]')
     y_o, sr = None, None
