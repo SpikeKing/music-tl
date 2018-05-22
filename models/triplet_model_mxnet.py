@@ -34,19 +34,33 @@ class TripletModelMxnet(ModelBase):
         kernel_size = 1
         pool_size = 2
         f_act = 'relu'
+        dropout_rate = 0.5
 
         with net_triplet.name_scope():
             net_triplet.add(Conv1D(channels=256, kernel_size=kernel_size, activation=f_act))
             net_triplet.add(BatchNorm())
             net_triplet.add(MaxPool1D(pool_size=pool_size))
+            net_triplet.add(Dropout(rate=dropout_rate))
 
             net_triplet.add(Conv1D(channels=128, kernel_size=kernel_size, activation=f_act))
             net_triplet.add(BatchNorm())
             net_triplet.add(MaxPool1D(pool_size=pool_size))
+            net_triplet.add(Dropout(rate=dropout_rate))
 
             net_triplet.add(Conv1D(channels=64, kernel_size=kernel_size, activation=f_act))
             net_triplet.add(BatchNorm())
             net_triplet.add(MaxPool1D(pool_size=pool_size))
+            net_triplet.add(Dropout(rate=dropout_rate))
+
+            net_triplet.add(Conv1D(channels=128, kernel_size=kernel_size, activation=f_act))
+            net_triplet.add(BatchNorm())
+            net_triplet.add(MaxPool1D(pool_size=pool_size))
+            net_triplet.add(Dropout(rate=dropout_rate))
+
+            net_triplet.add(Conv1D(channels=256, kernel_size=kernel_size, activation=f_act))
+            net_triplet.add(BatchNorm())
+            net_triplet.add(MaxPool1D(pool_size=pool_size))
+            net_triplet.add(Dropout(rate=dropout_rate))
 
             net_triplet.add(Dense(units=128))
 
