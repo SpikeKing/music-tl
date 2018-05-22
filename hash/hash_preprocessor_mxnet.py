@@ -10,12 +10,11 @@ import sys
 import mxnet as mx
 import numpy as np
 
-from models.triplet_model_mxnet import TripletModelMxnet
-
 p = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if p not in sys.path:
     sys.path.append(p)
 
+from models.triplet_model_mxnet import TripletModelMxnet
 from root_dir import ROOT_DIR
 
 
