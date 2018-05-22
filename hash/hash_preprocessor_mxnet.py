@@ -71,23 +71,22 @@ class HashPreProcessor(object):
         print('[INFO] 转换数量: %s' % n_list.shape[0])
         X_test = np.transpose(X_test, [0, 2, 1])
 
-        step = 10000
-        for index in range(0, X_test.shape[0], step):
-            test = X_test[index: index + step]
-            test = mx.nd.array(test).as_in_context(ctx)
-            print('[INFO] 输入结构: %s' % str(test.shape))
-            res = self.model(test)
-            print('[INFO] 输出结构: %s' % str(res.shape))
-            data = res.asnumpy()
-            print('[INFO] data.shape: %s' % str(data.shape))
-            oz_arr = np.where(data >= 0.0, 1.0, 0.0).astype(int)
-            print oz_arr[0]
-            # print np.sum(oz_arr, axis=1)  # 测试分布
-            oz_bin = np.apply_along_axis(self.to_binary, axis=1, arr=oz_arr)
-            print('[INFO] oz_bin: %s' % oz_bin[0])
-            oz_bin_all = np.concatenate((oz_bin_all, oz_bin), axis=0)
-            print('[INFO] oz_bin.shape: %s' % str(oz_bin.shape))
-            print('[INFO] oz_bin_all.shape: %s' % str(oz_bin_all.shape))
+        test = X_test
+        test = mx.nd.array(test).as_in_context(ctx)
+        print('[INFO] 输入结构: %s' % str(test.shape))
+        res = self.model(test)
+        print('[INFO] 输出结构: %s' % str(res.shape))
+        data = res.asnumpy()
+        data_prop = np.squeeze(data)
+        print('[INFO] data.shape: %s' % str(data.shape))
+        oz_arr = np.where(data_prop >= 0.0, 1.0, 0.0).astype(int)
+        print oz_arr[0]
+        # print np.sum(oz_arr, axis=1)  # 测试分布
+        oz_bin = np.apply_along_axis(self.to_binary, axis=1, arr=oz_arr)
+        print('[INFO] oz_bin: %s' % oz_bin[0])
+        oz_bin_all = np.concatenate((oz_bin_all, oz_bin), axis=0)
+        print('[INFO] oz_bin.shape: %s' % str(oz_bin.shape))
+        print('[INFO] oz_bin_all.shape: %s' % str(oz_bin_all.shape))
 
         out_path = os.path.join(ROOT_DIR, 'experiments', 'data_v2.bin.mx.npz')
         np.savez(out_path, b_list=oz_bin_all, l_list=l_list, n_list=n_list)
