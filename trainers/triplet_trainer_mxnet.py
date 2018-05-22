@@ -44,7 +44,7 @@ class TripletTrainerMxnet(TrainerBase):
         self.train_core(x_train, y_train, x_test, y_test)
 
     def train_core(self, x_train, y_train, x_test, y_test):
-        ctx = mx.gpu()
+        ctx = mx.gpu(0)
         self.model.collect_params().initialize(mx.init.Xavier(), ctx=ctx)
         triplet_loss = gluon.loss.TripletLoss(margin=64)
         trainer_triplet = gluon.Trainer(self.model.collect_params(), 'adam')
@@ -72,9 +72,9 @@ class TripletTrainerMxnet(TrainerBase):
             print('[INFO] 数据处理完成')
 
             for i, (data, _) in enumerate(train_data):
-                data = data.as_in_context(ctx)
-                anc_ins, pos_ins, neg_ins = data[:, 0], data[:, 1], data[:, 2]
-
+                anc_ins = data[:, 0].as_in_context(mx.gpu(1))
+                pos_ins = data[:, 1].as_in_context(mx.gpu(2))
+                neg_ins = data[:, 2].as_in_context(mx.gpu(3))
                 with autograd.record():
                     inter1 = self.model(anc_ins)
                     inter2 = self.model(pos_ins)
@@ -92,7 +92,7 @@ class TripletTrainerMxnet(TrainerBase):
                              (epoch, '%0.4f' % dist_acc)))  # 存储模型
 
     def test(self):
-        ctx = mx.gpu()
+        ctx = mx.gpu(0)
         self.model.load_params(
             os.path.join(ROOT_DIR, 'experiments/music_tl_v2/checkpoints', 'triplet_loss_model_15_1.0000.params'),
             ctx=ctx)
