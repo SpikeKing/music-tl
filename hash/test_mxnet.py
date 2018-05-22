@@ -30,7 +30,7 @@ def test_load_audio(mp3_path):
         y_o, sr = librosa.load(mp3_path)
     elapsed_time = (datetime.now() - start_time).total_seconds()
     tps = float(num) / float(elapsed_time)
-    print "[加载音频] Time: %s s, TPS: %0.0f (%s ms)" % (elapsed_time, tps, (1 / tps * 1000))
+    print "[加载音频] Time: %s s, TPS: %0.4f (%s ms)" % (elapsed_time, tps, (1 / tps * 1000))
 
     start_time = datetime.now()  # 起始时间
     y = None
@@ -38,7 +38,7 @@ def test_load_audio(mp3_path):
         y, _ = librosa.effects.trim(y_o, top_db=40)  # 去掉空白部分
     elapsed_time = (datetime.now() - start_time).total_seconds()
     tps = float(num) / float(elapsed_time)
-    print "[去掉留白] Time: %s s, TPS: %0.0f (%s ms)" % (elapsed_time, tps, (1 / tps * 1000))
+    print "[去掉留白] Time: %s s, TPS: %0.4f (%s ms)" % (elapsed_time, tps, (1 / tps * 1000))
 
     start_time = datetime.now()  # 起始时间
     features = None
@@ -46,7 +46,7 @@ def test_load_audio(mp3_path):
         features = get_feature(y, sr)
     elapsed_time = (datetime.now() - start_time).total_seconds()
     tps = float(num) / float(elapsed_time)
-    print "[提取特征] Time: %s s, TPS: %0.0f (%s ms)" % (elapsed_time, tps, (1 / tps * 1000))
+    print "[提取特征] Time: %s s, TPS: %0.4f (%s ms)" % (elapsed_time, tps, (1 / tps * 1000))
 
     ctx = mx.gpu(0)
     model = TripletModelMxnet.deep_conv_lstm()
@@ -62,7 +62,7 @@ def test_load_audio(mp3_path):
         model(features)
     elapsed_time = (datetime.now() - start_time).total_seconds()
     tps = float(num) / float(elapsed_time)
-    print "[预测] Time: %s s, TPS: %0.0f (%s ms)" % (elapsed_time, tps, (1 / tps * 1000))
+    print "[预测] Time: %s s, TPS: %0.4f (%s ms)" % (elapsed_time, tps, (1 / tps * 1000))
 
 
 if __name__ == '__main__':
