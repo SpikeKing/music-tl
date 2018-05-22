@@ -31,7 +31,7 @@ class HashPreProcessor(object):
         #     outputs=mx.sym.load_json(sym_json),
         #     inputs=mx.sym.var('data'))
         self.model = TripletModelMxnet.deep_conv_lstm()
-        params = os.path.join(ROOT_DIR, "experiments/music_tl_v2/checkpoints", "triplet_loss_model_1_0.9816.params")
+        params = os.path.join(ROOT_DIR, "experiments/music_tl_v2/checkpoints", "triplet_loss_model_7_0.9898.params")
         print('[INFO] 模型: %s' % params)
         self.model.load_params(params, ctx=ctx)
 
