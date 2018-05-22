@@ -25,7 +25,7 @@ class HashPreProcessor(object):
 
     def process(self):
         print('[INFO] 转换开始')
-        ctx = mx.gpu(1)
+        ctx = mx.cpu(1)
         self.model = TripletModelMxnet.deep_conv_lstm()
         params = os.path.join(ROOT_DIR, "experiments/music_tl_v2/checkpoints", "triplet_loss_model_92_1.0000.params")
         print('[INFO] 模型: %s' % params)
@@ -67,31 +67,26 @@ class HashPreProcessor(object):
         l_list = l_list[o_indexes]
         X_test = X_test[o_indexes]
 
-        oz_bin_all = np.array([])
         print('[INFO] 转换数量: %s' % n_list.shape[0])
+
         X_test = np.transpose(X_test, [0, 2, 1])
 
-        test = X_test
-        test = mx.nd.array(test).as_in_context(ctx)
-        print('[INFO] 输入结构: %s' % str(test.shape))
-        res = self.model(test)
+        X_test = mx.nd.array(X_test).as_in_context(ctx)
+        print('[INFO] 输入结构: %s' % str(X_test.shape))
+        res = self.model(X_test)
         print('[INFO] 输出结构: %s' % str(res.shape))
         data = res.asnumpy()
-        data_prop = np.squeeze(data)
         print('[INFO] data.shape: %s' % str(data.shape))
-        oz_arr = np.where(data_prop >= 0.0, 1.0, 0.0).astype(int)
+        oz_arr = np.where(data >= 0.0, 1.0, 0.0).astype(int)
         print oz_arr[0]
         # print np.sum(oz_arr, axis=1)  # 测试分布
         oz_bin = np.apply_along_axis(self.to_binary, axis=1, arr=oz_arr)
         print('[INFO] oz_bin: %s' % oz_bin[0])
-        oz_bin_all = np.concatenate((oz_bin_all, oz_bin), axis=0)
-        print('[INFO] oz_bin.shape: %s' % str(oz_bin.shape))
-        print('[INFO] oz_bin_all.shape: %s' % str(oz_bin_all.shape))
 
         out_path = os.path.join(ROOT_DIR, 'experiments', 'data_v2.bin.mx.npz')
-        np.savez(out_path, b_list=oz_bin_all, l_list=l_list, n_list=n_list)
+        np.savez(out_path, b_list=oz_bin, l_list=l_list, n_list=n_list)
 
-        print('[INFO] 输出示例: %s %s %s' % (str(oz_bin_all.shape), bin(oz_bin_all[0]), oz_bin_all[0]))
+        print('[INFO] 输出示例: %s %s %s' % (str(oz_bin.shape), bin(oz_bin[0]), oz_bin[0]))
         print('[INFO] 转换结束')
 
     @staticmethod
