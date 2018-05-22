@@ -31,7 +31,7 @@ class HashPreProcessor(object):
         #     outputs=mx.sym.load_json(sym_json),
         #     inputs=mx.sym.var('data'))
         self.model = TripletModelMxnet.deep_conv_lstm()
-        params = os.path.join(ROOT_DIR, "experiments/music_tl_v2/checkpoints", "triplet_loss_model_9_0.9880.params")
+        params = os.path.join(ROOT_DIR, "experiments/music_tl_v2/checkpoints", "triplet_loss_model_13_0.9046.params")
         print('[INFO] 模型: %s' % params)
         self.model.load_params(params, ctx=ctx)
 
@@ -87,9 +87,9 @@ class HashPreProcessor(object):
         print('[INFO] 输出结构: %s' % str(res.shape))
         data = res.asnumpy()
         print('[INFO] data.shape: %s' % str(data.shape))
-        oz_arr = np.where(data >= 0.5, 1.0, 0.0).astype(int)
+        oz_arr = np.where(data >= 0.5, 1.0, 0.0).astype(int)  # sigmoid激活函数
         print oz_arr[0]
-        # print np.sum(oz_arr, axis=1)  # 测试分布
+        print np.sum(oz_arr, axis=1)  # 测试分布
         oz_bin = np.apply_along_axis(self.to_binary, axis=1, arr=oz_arr)
         print('[INFO] oz_bin: %s' % oz_bin[0])
 
