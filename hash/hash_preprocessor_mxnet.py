@@ -38,11 +38,13 @@ class HashPreProcessor(object):
         l_list1 = data_all['l_list']
         n_list1 = data_all['n_list']
 
+        print('[INFO] X_test1.shape: ' + str(X_test1.shape))
+        print('[INFO] l_list1.shape: ' + str(l_list1.shape))
+        print('[INFO] n_list1.shape: ' + str(n_list1.shape))
+
         X_test = X_test1
         l_list = l_list1
         n_list = n_list1
-
-        print('[INFO] X_test1.shape: ' + str(X_test1.shape))
 
         # file_name = 'data_test_v2.npz'
         # data_path = os.path.join(ROOT_DIR, 'experiments', file_name)
