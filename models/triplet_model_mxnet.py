@@ -25,10 +25,9 @@ class TripletModelMxnet(ModelBase):
         self.model = self.deep_conv_lstm()  # LSTM模型
 
     @staticmethod
-    def deep_conv_lstm():
+    def deep_conv_lstm(is_saved=False):
         """
         共享模型deep_conv_lstm
-        :return: 模型
         """
         net_triplet = HybridSequential(prefix='net_')
 
@@ -51,7 +50,9 @@ class TripletModelMxnet(ModelBase):
 
             net_triplet.add(Dense(units=128))
 
-        sym_json = net_triplet(mx.sym.var('data')).tojson()
-        json_file = os.path.join(ROOT_DIR, 'experiments', 'sym.json')
-        write_line(json_file, sym_json)
+        if is_saved:
+            print('[INFO] 存储网络JSON图')
+            sym_json = net_triplet(mx.sym.var('data')).tojson()
+            json_file = os.path.join(ROOT_DIR, 'experiments', 'sym.json')
+            write_line(json_file, sym_json)
         return net_triplet
