@@ -23,6 +23,7 @@ from root_dir import ROOT_DIR
 def test_load_audio(mp3_path):
     num = 1000
 
+    print('[统计开始]')
     y_o, sr = None, None
     start_time = datetime.now()  # 起始时间
     for i in range(num):
