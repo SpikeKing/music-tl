@@ -26,10 +26,7 @@ class HashPreProcessor(object):
     def process(self):
         print('[INFO] 转换开始')
         ctx = mx.cpu(1)
-        # sym_json = os.path.join(ROOT_DIR, 'experiments', 'sym.json')
-        # self.model = gluon.nn.SymbolBlock(
-        #     outputs=mx.sym.load_json(sym_json),
-        #     inputs=mx.sym.var('data'))
+        # Final: triplet_loss_model_10_0.9893.params
         self.model = TripletModelMxnet.deep_conv_lstm()
         params = os.path.join(ROOT_DIR, "experiments/music_tl_v2/checkpoints", "triplet_loss_model_10_0.9893.params")
         print('[INFO] 模型: %s' % params)
