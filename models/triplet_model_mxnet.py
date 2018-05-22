@@ -57,10 +57,10 @@ class TripletModelMxnet(ModelBase):
             net_triplet.add(MaxPool1D(pool_size=pool_size))
             net_triplet.add(Dropout(rate=dropout_rate))
 
-            net_triplet.add(Dense(units=128))
+            net_triplet.add(Dense(units=128, activation=f_act))
             net_triplet.add(Dropout(rate=dropout_rate))
 
-            net_triplet.add(Dense(units=128))
+            net_triplet.add(Dense(units=128, activation='sigmoid'))
 
         if is_saved:
             print('[INFO] 存储网络JSON图')

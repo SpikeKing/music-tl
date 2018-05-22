@@ -87,7 +87,7 @@ class HashPreProcessor(object):
         print('[INFO] 输出结构: %s' % str(res.shape))
         data = res.asnumpy()
         print('[INFO] data.shape: %s' % str(data.shape))
-        oz_arr = np.where(data >= 0.0, 1.0, 0.0).astype(int)
+        oz_arr = np.where(data >= 0.5, 1.0, 0.0).astype(int)
         print oz_arr[0]
         # print np.sum(oz_arr, axis=1)  # 测试分布
         oz_bin = np.apply_along_axis(self.to_binary, axis=1, arr=oz_arr)
