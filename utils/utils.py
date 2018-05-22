@@ -91,3 +91,19 @@ def safe_div(x, y):
         return 0.0
     else:
         return x / y
+
+
+def write_line(file_name, line):
+    """
+    将行数据写入文件
+    :param file_name: 文件名
+    :param line: 行数据
+    :return: None
+    """
+    if file_name == "":
+        return
+    with open(file_name, "a+") as fs:
+        if type(line) is (tuple or list):
+            fs.write("%s\n" % ", ".join(line))
+        else:
+            fs.write("%s\n" % line)

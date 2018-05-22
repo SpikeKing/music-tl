@@ -7,15 +7,15 @@ Created by C. L. Wang on 2018/5/8
 import os
 import sys
 
-import numpy as np
 import mxnet as mx
+import numpy as np
+from mxnet import gluon
 
 p = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if p not in sys.path:
     sys.path.append(p)
 
-from models.triplet_model_mxnet import TripletModelMxnet
-from root_dir import ROOT_DIR, O_DIM
+from root_dir import ROOT_DIR
 
 
 class HashPreProcessor(object):
@@ -26,7 +26,10 @@ class HashPreProcessor(object):
     def process(self):
         print('[INFO] 转换开始')
         ctx = mx.cpu(1)
-        self.model = TripletModelMxnet.deep_conv_lstm()
+        sym_json = os.path.join(ROOT_DIR, 'experiments', 'sym.json')
+        self.model = gluon.nn.SymbolBlock(
+            outputs=mx.sym.load_json(sym_json),
+            inputs=mx.sym.var('data'))
         params = os.path.join(ROOT_DIR, "experiments/music_tl_v2/checkpoints", "triplet_loss_model_6_0.9997.params")
         print('[INFO] 模型: %s' % params)
         self.model.load_params(params, ctx=ctx)
