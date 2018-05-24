@@ -28,7 +28,7 @@ class HashPreProcessor(object):
         ctx = mx.cpu(1)
         # Final: triplet_loss_model_10_0.9893.params
         self.model = TripletModelMxnet.deep_conv_lstm()
-        params = os.path.join(ROOT_DIR, "experiments/music_tl_v2/checkpoints", "triplet_loss_model_10_0.9893.params")
+        params = os.path.join(ROOT_DIR, "experiments/music_tl_v2/checkpoints", "triplet_loss_model_88_0.9934.params")
         print('[INFO] 模型: %s' % params)
         self.model.load_params(params, ctx=ctx)
 
