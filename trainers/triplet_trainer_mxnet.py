@@ -94,7 +94,7 @@ class TripletTrainerMxnet(TrainerBase):
     def test(self):
         ctx = mx.gpu(0)
         self.model.load_params(
-            os.path.join(ROOT_DIR, 'experiments/music_tl_v2/checkpoints', 'triplet_loss_model_15_1.0000.params'),
+            os.path.join(ROOT_DIR, 'experiments/music_tl_v2/checkpoints', 'triplet_loss_model_88_0.9934.params '),
             ctx=ctx)
 
         # 测试不使用全量数据
