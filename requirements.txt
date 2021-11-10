@@ -1,4 +1,4 @@
-tensorflow==2.5.0
+tensorflow==2.5.2
 keras==2.1.5
 bunch==1.0.1
 h5py==2.7.1
